@@ -1,0 +1,1039 @@
+# English translation for vv_pet01.
+# This file is distributed under the same license as the vv-pet01 package.
+#
+# 说明：本项目以中文作为 msgid（源语言），因此中文目录无需翻译目录，
+# 仅需维护这一份英文目录。目录中同时包含两类条目：
+#   1) 模板与 Python 中 _("...") 的字面量文案（可由 pybabel extract 抽取）；
+#   2) 通过 _("变量") 翻译的受控词表（品种、性格标签、城市、表单选项等），
+#      这类条目不会被自动抽取，需要在此手工维护。
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vv-pet01 0.2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-11 12:00+0800\n"
+"PO-Revision-Date: 2026-09-11 12:00+0800\n"
+"Last-Translator: vv_pet01\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# ---------------------------------------------------------------------------
+# 通用站点文案（base.html / 页脚 / 跳转链接）
+# ---------------------------------------------------------------------------
+msgid "label"
+msgstr "label"
+
+msgid "让每一个生命都被温柔以待"
+msgstr "Let every life be met with gentleness"
+
+msgid "跳到主要内容"
+msgstr "Skip to main content"
+
+msgid "站点主导航"
+msgstr "Site main navigation"
+
+msgid "展开导航菜单"
+msgstr "Toggle navigation menu"
+
+msgid "面包屑导航"
+msgstr "Breadcrumb"
+
+msgid "首页"
+msgstr "Home"
+
+msgid "领养宠物"
+msgstr "Adopt a Pet"
+
+msgid "动物保护"
+msgstr "Animal Protection"
+
+msgid "参与公益"
+msgstr "Get Involved"
+
+msgid "公益演示站点 · 本站内容仅用于功能演示"
+msgstr "Non-profit demo site · content is for demonstration purposes only"
+
+msgid "%(site)s —— 动物保护、宠物救助与宠物领养公益平台"
+msgstr "%(site)s — a non-profit platform for animal protection, pet rescue and pet adoption"
+
+msgid "%(slogan)s。我们致力于动物保护、宠物救助与宠物领养，让每一次相遇都成为温暖的开始。"
+msgstr "%(slogan)s. We work on animal protection, pet rescue and pet adoption, so that every encounter becomes a warm new beginning."
+
+# ---------------------------------------------------------------------------
+# 通用占位页与错误页
+# ---------------------------------------------------------------------------
+msgid "页面未找到"
+msgstr "Page Not Found"
+
+msgid "您访问的页面不存在，请通过顶部导航返回。"
+msgstr "The page you requested does not exist. Please use the navigation above to continue."
+
+msgid "服务暂时不可用"
+msgstr "Service Temporarily Unavailable"
+
+msgid "服务器开小差了，请稍后再试。"
+msgstr "Something went wrong on our side. Please try again later."
+
+msgid "本页面正在建设中，敬请期待。"
+msgstr "This page is under construction. Stay tuned."
+
+msgid "当前页面仅展示页面名称，后续将在此填充具体的公益内容与交互功能。"
+msgstr "This page currently only shows its title; detailed content and interactions will be added later."
+
+# ---------------------------------------------------------------------------
+# 首页
+# ---------------------------------------------------------------------------
+msgid "动物保护 · 宠物救助 · 宠物领养"
+msgstr "Animal Protection · Pet Rescue · Pet Adoption"
+
+msgid "让每一个生命"
+msgstr "Let every life"
+
+msgid "都被"
+msgstr "be met with"
+
+msgid "温柔以待"
+msgstr "gentleness"
+
+msgid "%(site)s 连接流浪动物、救助机构与爱心家庭，用透明可信的领养机制，让等待被看见，让陪伴有归处。"
+msgstr "%(site)s connects stray animals, rescue organisations and loving families. With a transparent and trustworthy adoption process, we make sure every waiting animal is seen and every companion finds a home."
+
+msgid "了解领养流程"
+msgstr "Learn About Adoption"
+
+msgid "成功领养"
+msgstr "Successful adoptions"
+
+msgid "合作救助站"
+msgstr "Partner shelters"
+
+msgid "注册志愿者"
+msgstr "Registered volunteers"
+
+msgid "志愿者与待领养的狗狗互动"
+msgstr "A volunteer interacting with a dog waiting to be adopted"
+
+msgid "每一次领养，都是一次生命的重启"
+msgstr "Every adoption is a fresh start for a life"
+
+msgid "从提交申请到接它回家，只需四步。"
+msgstr "Four simple steps from application to bringing your new friend home."
+
+msgid "在线提交申请"
+msgstr "Apply online"
+
+msgid "填写领养申请表，说明居住环境、家庭成员与养宠经验。"
+msgstr "Complete the adoption application form describing your home, household members and pet experience."
+
+msgid "救助站联系沟通"
+msgstr "Talk with the shelter"
+
+msgid "工作人员会在 3 个工作日内联系你，沟通养护细节与双方期待。"
+msgstr "Our staff will contact you within 3 working days to talk through care details and expectations."
+
+msgid "见面与匹配"
+msgstr "Meet and match"
+
+msgid "到救助站与狗狗见面，确认性格与生活方式是否契合。"
+msgstr "Visit the shelter to meet the dog and see whether personalities and lifestyles fit."
+
+msgid "签署协议与交接"
+msgstr "Sign and take home"
+
+msgid "签署领养协议并接它回家，1 个月内我们会回访跟进。"
+msgstr "Sign the adoption agreement and bring your new friend home — we will follow up within one month."
+
+msgid "救助故事"
+msgstr "Rescue Stories"
+
+msgid "每一个故事都始于一次救助，正在等待一个结局。"
+msgstr "Every story begins with a rescue and is waiting for its ending."
+
+msgid "救助故事列表"
+msgstr "Rescue stories list"
+
+msgid "救助人与 %(name)s 的合照"
+msgstr "The rescuer with %(name)s"
+
+msgid "左右滑动查看更多故事"
+msgstr "Scroll sideways to see more stories"
+
+msgid "你的一个小小行动，就是它的一生"
+msgstr "One small act from you means a whole life to them"
+
+msgid "加入 %(site)s，用领养代替购买，用陪伴代替遗弃。"
+msgstr "Join %(site)s — adopt instead of buying, and accompany instead of abandoning."
+
+msgid "我要捐赠"
+msgstr "Donate Now"
+
+msgid "申请寄养"
+msgstr "Apply to Foster"
+
+# ---------------------------------------------------------------------------
+# 占位子页面：领养宠物
+# ---------------------------------------------------------------------------
+msgid "领养狗狗"
+msgstr "Adopt a Dog"
+
+msgid "领养猫咪"
+msgstr "Adopt a Cat"
+
+msgid "这里将展示等待领养的猫咪信息与领养条件。"
+msgstr "Adoptable cats and adoption requirements will be listed here."
+
+msgid "其他宠物"
+msgstr "Other Pets"
+
+msgid "这里将展示兔子、鸟类等小动物的领养信息。"
+msgstr "Adoption information for rabbits, birds and other small animals will be listed here."
+
+msgid "领养流程"
+msgstr "Adoption Process"
+
+msgid "这里将介绍从申请、审核到交接的完整领养流程。"
+msgstr "This page will explain the full adoption process, from application and review to handover."
+
+# ---------------------------------------------------------------------------
+# 占位子页面：动物保护
+# ---------------------------------------------------------------------------
+msgid "动物福利"
+msgstr "Animal Welfare"
+
+msgid "这里将介绍动物福利五大自由与相关公益倡议。"
+msgstr "The Five Freedoms of animal welfare and related initiatives will be introduced here."
+
+msgid "反动物虐待"
+msgstr "Against Animal Cruelty"
+
+msgid "这里将介绍反虐待动物知识科普与举报求助渠道。"
+msgstr "Knowledge about animal cruelty prevention and how to report abuse will be introduced here."
+
+msgid "灾害动物救助"
+msgstr "Disaster Animal Rescue"
+
+msgid "这里将介绍自然灾害中的动物紧急救助行动。"
+msgstr "Emergency rescue actions for animals in natural disasters will be introduced here."
+
+# ---------------------------------------------------------------------------
+# 占位子页面：参与公益
+# ---------------------------------------------------------------------------
+msgid "成为志愿者"
+msgstr "Become a Volunteer"
+
+msgid "这里将介绍志愿者招募条件与报名方式。"
+msgstr "Volunteer requirements and sign-up details will be introduced here."
+
+msgid "公益活动"
+msgstr "Charity Events"
+
+msgid "这里将展示近期公益活动安排与往期回顾。"
+msgstr "Upcoming charity events and past highlights will be shown here."
+
+msgid "捐赠"
+msgstr "Donate"
+
+msgid "这里将说明捐赠用途、物资清单与捐赠渠道。"
+msgstr "How donations are used, the supplies needed and the donation channels will be explained here."
+
+msgid "寄养宠物"
+msgstr "Foster a Pet"
+
+msgid "这里将介绍临时寄养家庭的申请与支持方案。"
+msgstr "How to apply to become a foster home, and the support provided, will be introduced here."
+
+# ---------------------------------------------------------------------------
+# 狗狗搜索页
+# ---------------------------------------------------------------------------
+msgid "按品种、体型、年龄与所在城市筛选，或开启定位查找离你最近的救助站。"
+msgstr "Filter by breed, size, age and city, or share your location to find the nearest shelter."
+
+msgid "共找到"
+msgstr "Found"
+
+msgid "只狗狗"
+msgstr "dog(s)"
+
+msgid "已按距你最近排序"
+msgstr "Sorted by distance from you"
+
+msgid "未开启定位，正在按最新发布排序"
+msgstr "Location is off — currently sorted by newest"
+
+msgid "关键词"
+msgstr "Keyword"
+
+msgid "搜索名字、品种、性格或救助站"
+msgstr "Search by name, breed, personality or shelter"
+
+msgid "全部城市"
+msgstr "All cities"
+
+msgid "品种"
+msgstr "Breed"
+
+msgid "全部品种"
+msgstr "All breeds"
+
+msgid "体型"
+msgstr "Size"
+
+msgid "全部体型"
+msgstr "All sizes"
+
+msgid "性别"
+msgstr "Gender"
+
+msgid "不限"
+msgstr "Any"
+
+msgid "年龄"
+msgstr "Age"
+
+msgid "全部年龄"
+msgstr "All ages"
+
+msgid "状态"
+msgstr "Status"
+
+msgid "全部状态"
+msgstr "All statuses"
+
+msgid "排序"
+msgstr "Sort by"
+
+msgid "搜索狗狗"
+msgstr "Search dogs"
+
+msgid "重置条件"
+msgstr "Reset filters"
+
+msgid "使用我的位置"
+msgstr "Use my location"
+
+msgid "当前已按你的位置计算救助站距离，可随时重新定位或选择城市。"
+msgstr "Shelter distances are currently calculated from your location. You can re-locate or pick a city at any time."
+
+msgid "开启定位后，将优先显示离你最近的救助站狗狗。"
+msgstr "Turn on location and we will show dogs from the shelters closest to you first."
+
+msgid "附近救助站"
+msgstr "Nearby shelters"
+
+msgid "查看全部"
+msgstr "View all"
+
+msgid "在养 %(n)s 只"
+msgstr "%(n)s dog(s) in care"
+
+msgid "当前条件下没有可选的救助站。"
+msgstr "No shelters match the current filters."
+
+msgid "第 %(page)s / %(pages)s 页，共 %(total)s 条结果"
+msgstr "Page %(page)s of %(pages)s · %(total)s result(s)"
+
+msgid "关键词：%(value)s"
+msgstr "Keyword: %(value)s"
+
+msgid "已选年龄段"
+msgstr "Age group selected"
+
+msgid "已限定救助站"
+msgstr "Shelter limited"
+
+msgid "距你 %(km)s km"
+msgstr "%(km)s km away"
+
+msgid "我要领养"
+msgstr "I want to adopt"
+
+msgid "查看详情"
+msgstr "View details"
+
+msgid "搜索结果分页"
+msgstr "Search results pagination"
+
+msgid "上一页"
+msgstr "Previous"
+
+msgid "下一页"
+msgstr "Next"
+
+msgid "没有找到符合条件的狗狗"
+msgstr "No dogs match your filters"
+
+msgid "试着放宽品种、体型或年龄条件，或者切换到其他城市的救助站看看。"
+msgstr "Try loosening the breed, size or age filters, or look at shelters in another city."
+
+msgid "查看全部待领养狗狗"
+msgstr "View all adoptable dogs"
+
+msgid "当前浏览器不支持定位，请手动选择城市。"
+msgstr "Your browser does not support geolocation. Please pick a city manually."
+
+msgid "正在获取你的位置…"
+msgstr "Getting your location…"
+
+msgid "定位失败或未授权，请手动选择城市后重新搜索。"
+msgstr "Location failed or was denied. Please pick a city manually and search again."
+
+# ---------------------------------------------------------------------------
+# 狗狗详情页
+# ---------------------------------------------------------------------------
+msgid "来自 %(shelter)s"
+msgstr "From %(shelter)s"
+
+msgid "距你约 %(km)s km"
+msgstr "About %(km)s km away"
+
+msgid "基本信息"
+msgstr "Basic information"
+
+msgid "体型 / 体重"
+msgstr "Size / weight"
+
+msgid "疫苗"
+msgstr "Vaccination"
+
+msgid "已完成"
+msgstr "Completed"
+
+msgid "待接种"
+msgstr "Not yet vaccinated"
+
+msgid "绝育"
+msgstr "Neutering"
+
+msgid "待安排"
+msgstr "To be arranged"
+
+msgid "入站日期"
+msgstr "Intake date"
+
+msgid "性格标签"
+msgstr "Personality traits"
+
+msgid "它的救助故事"
+msgstr "Its rescue story"
+
+msgid "返回搜索"
+msgstr "Back to search"
+
+msgid "所属救助站"
+msgstr "Shelter"
+
+msgid "名称"
+msgstr "Name"
+
+msgid "城市"
+msgstr "City"
+
+msgid "救助站电话"
+msgstr "Shelter phone"
+
+msgid "成立年份"
+msgstr "Founded in"
+
+msgid "地址"
+msgstr "Address"
+
+msgid "简介"
+msgstr "About"
+
+# ---------------------------------------------------------------------------
+# 领养申请表
+# ---------------------------------------------------------------------------
+msgid "领养申请表"
+msgstr "Adoption Application"
+
+msgid "请如实填写以下信息，救助站会据此与你联系并安排后续沟通。"
+msgstr "Please answer the questions below honestly. The shelter will use your answers to contact you and arrange the next steps."
+
+msgid "本次申请的动物"
+msgstr "Animal in this application"
+
+msgid "来自 %(shelter)s（%(city)s）"
+msgstr "From %(shelter)s (%(city)s)"
+
+msgid "返回详情"
+msgstr "Back to details"
+
+msgid "一、领养对象"
+msgstr "1. The animal you are adopting"
+
+msgid "已根据你查看的狗狗自动填写，如有变化可直接修改。"
+msgstr "Pre-filled from the dog you were viewing; feel free to change it."
+
+msgid "二、申请人信息"
+msgstr "2. Your details"
+
+msgid "三、家庭成员与家中宠物"
+msgstr "3. Household members and pets at home"
+
+msgid "例如：同住人 3 位，其中一位 6 岁儿童，白天家中有人。"
+msgstr "For example: 3 people live here, including a 6-year-old child, and someone is home during the day."
+
+msgid "四、希望沟通的养护话题"
+msgstr "4. Care topics you would like to discuss"
+
+msgid "勾选你希望救助站详细介绍的内容，工作人员会在沟通中逐项说明。"
+msgstr "Tick the topics you would like the shelter to explain in detail; staff will go through them with you."
+
+msgid "五、感兴趣的额外服务"
+msgstr "5. Additional services you are interested in"
+
+msgid "以下为救助站可提供的支持，勾选后我们会一并准备。"
+msgstr "These are the kinds of support the shelter can provide. Tick any you would like and we will prepare them."
+
+msgid "本表参考 Humane World for Animals 的 Adopters Welcome 样本问卷设计。"
+msgstr "This form is based on the Adopters Welcome sample questionnaire from Humane World for Animals."
+
+msgid "提交申请"
+msgstr "Submit application"
+
+msgid "取消"
+msgstr "Cancel"
+
+msgid "如勾选，请以收礼人的实际情况回答以下问题。"
+msgstr "If checked, please answer the following questions from the point of view of the recipient."
+
+msgid "我们欢迎租房或居住公寓的领养人。需要提醒的是，部分房东或物业可能对宠物体型、品种、数量有要求，或需要额外押金；如需协助沟通，请在下方说明，我们会提供支持。"
+msgstr "We welcome adopters who rent or live in an apartment. Please note that some landlords or property managers may have size, breed or number-of-pet restrictions, or require additional deposits. If you would like help with that conversation, let us know below and we will support you."
+
+# ---------------------------------------------------------------------------
+# 申请回执与申请记录
+# ---------------------------------------------------------------------------
+msgid "申请已提交"
+msgstr "Application Submitted"
+
+msgid "我们已收到你的领养申请，救助站会尽快与你联系。"
+msgstr "We have received your adoption application. The shelter will contact you as soon as possible."
+
+msgid "申请编号"
+msgstr "Reference"
+
+msgid "申请人"
+msgstr "Applicant"
+
+msgid "申请的动物"
+msgstr "Animal applied for"
+
+msgid "电子邮箱"
+msgstr "Email"
+
+msgid "最佳联系方式"
+msgstr "Best way to reach you"
+
+msgid "提交时间"
+msgstr "Submitted at"
+
+msgid "未填写"
+msgstr "Not provided"
+
+msgid "你希望沟通的话题"
+msgstr "Topics you would like to discuss"
+
+msgid "你感兴趣的额外服务"
+msgstr "Additional services you are interested in"
+
+msgid "接下来的流程"
+msgstr "What happens next"
+
+msgid "救助站会在 3 个工作日内通过你选择的方式联系你。"
+msgstr "The shelter will contact you within 3 working days using the method you chose."
+
+msgid "双方沟通养护细节，并确认居住环境是否符合要求。"
+msgstr "We will discuss care details and confirm whether your home environment meets the requirements."
+
+msgid "签署领养协议，约定时间到救助站与狗狗见面。"
+msgstr "Sign the adoption agreement and arrange a time to meet the dog at the shelter."
+
+msgid "完成交接，进入回访期，我们会在 1 个月内跟进适应情况。"
+msgstr "Complete the handover and enter the follow-up period — we will check in on how things are going within one month."
+
+msgid "查看申请记录"
+msgstr "View applications"
+
+msgid "继续浏览待领养狗狗"
+msgstr "Keep browsing dogs"
+
+msgid "领养申请记录"
+msgstr "Adoption Applications"
+
+msgid "这里展示本站收到的全部领养申请，可用于查看已提交记录。"
+msgstr "All adoption applications received by this site are listed here so you can review what has been submitted."
+
+msgid "共 %(total)s 条申请记录"
+msgstr "%(total)s application(s) in total"
+
+msgid "联系方式"
+msgstr "Contact"
+
+msgid "操作"
+msgstr "Actions"
+
+msgid "待救助站推荐"
+msgstr "To be recommended by the shelter"
+
+msgid "查看回执"
+msgstr "View receipt"
+
+msgid "申请记录分页"
+msgstr "Application list pagination"
+
+msgid "还没有收到领养申请"
+msgstr "No adoption applications yet"
+
+msgid "前往领养狗狗页面挑选一只狗狗并提交申请，记录会显示在这里。"
+msgstr "Pick a dog on the Adopt a Dog page and submit an application — it will show up here."
+
+msgid "去挑选狗狗"
+msgstr "Choose a dog"
+
+# ---------------------------------------------------------------------------
+# 年龄格式化（services/adoption.py: format_age）
+# ---------------------------------------------------------------------------
+msgid "%(n)s 个月"
+msgstr "%(n)s months"
+
+msgid "%(y)s 岁"
+msgstr "%(y)s yr"
+
+msgid "%(y)s 岁 %(m)s 个月"
+msgstr "%(y)s yr %(m)s mo"
+
+# ---------------------------------------------------------------------------
+# 表单校验消息
+# ---------------------------------------------------------------------------
+msgid "此项为必填"
+msgstr "This field is required"
+
+msgid "长度不能超过 %(max)d 个字符"
+msgstr "Must be no longer than %(max)d characters"
+
+msgid "请输入有效的电子邮箱地址"
+msgstr "Please enter a valid email address"
+
+msgid "请确认信息真实有效后再提交"
+msgstr "Please confirm the information is accurate before submitting"
+
+# ---------------------------------------------------------------------------
+# 受控词表：领养状态
+# ---------------------------------------------------------------------------
+msgid "待领养"
+msgstr "Available"
+
+msgid "审核中"
+msgstr "Under review"
+
+msgid "已领养"
+msgstr "Adopted"
+
+msgid "已提交"
+msgstr "Submitted"
+
+msgid "已通过"
+msgstr "Approved"
+
+# ---------------------------------------------------------------------------
+# 受控词表：性别与体型
+# ---------------------------------------------------------------------------
+msgid "公"
+msgstr "Male"
+
+msgid "母"
+msgstr "Female"
+
+msgid "小型"
+msgstr "Small"
+
+msgid "中型"
+msgstr "Medium"
+
+msgid "大型"
+msgstr "Large"
+
+# ---------------------------------------------------------------------------
+# 受控词表：品种
+# ---------------------------------------------------------------------------
+msgid "金毛寻回犬"
+msgstr "Golden Retriever"
+
+msgid "中华田园犬"
+msgstr "Chinese Native Dog"
+
+msgid "柴犬"
+msgstr "Shiba Inu"
+
+msgid "比熊犬"
+msgstr "Bichon Frise"
+
+msgid "边境牧羊犬"
+msgstr "Border Collie"
+
+msgid "拉布拉多"
+msgstr "Labrador Retriever"
+
+msgid "德国牧羊犬"
+msgstr "German Shepherd"
+
+msgid "泰迪犬"
+msgstr "Toy Poodle"
+
+msgid "萨摩耶"
+msgstr "Samoyed"
+
+msgid "博美犬"
+msgstr "Pomeranian"
+
+msgid "柯基犬"
+msgstr "Corgi"
+
+msgid "哈士奇"
+msgstr "Siberian Husky"
+
+# ---------------------------------------------------------------------------
+# 受控词表：性格标签
+# ---------------------------------------------------------------------------
+msgid "亲人"
+msgstr "Affectionate"
+
+msgid "会握手"
+msgstr "Knows how to shake"
+
+msgid "安静"
+msgstr "Quiet"
+
+msgid "活泼"
+msgstr "Lively"
+
+msgid "适合有孩子的家庭"
+msgstr "Good with children"
+
+msgid "独立"
+msgstr "Independent"
+
+msgid "爱干净"
+msgstr "Neat"
+
+msgid "需要耐心"
+msgstr "Needs patience"
+
+msgid "黏人"
+msgstr "Clingy"
+
+msgid "不掉毛"
+msgstr "Low-shedding"
+
+msgid "适合公寓"
+msgstr "Apartment-friendly"
+
+msgid "聪明"
+msgstr "Smart"
+
+msgid "精力旺盛"
+msgstr "High energy"
+
+msgid "需要运动"
+msgstr "Needs exercise"
+
+msgid "贪吃"
+msgstr "Food-motivated"
+
+msgid "友善"
+msgstr "Friendly"
+
+msgid "喜欢玩水"
+msgstr "Loves water"
+
+msgid "忠诚"
+msgstr "Loyal"
+
+msgid "警觉"
+msgstr "Alert"
+
+msgid "沉稳"
+msgstr "Steady"
+
+msgid "爱笑"
+msgstr "Smiley"
+
+msgid "掉毛多"
+msgstr "Heavy shedder"
+
+msgid "不急躁"
+msgstr "Easygoing"
+
+msgid "适合养老家庭"
+msgstr "Great for senior owners"
+
+msgid "机警"
+msgstr "Watchful"
+
+msgid "爱叫"
+msgstr "Vocal"
+
+msgid "短腿"
+msgstr "Short-legged"
+
+msgid "爱撒娇"
+msgstr "Cuddly"
+
+msgid "幼犬"
+msgstr "Puppy"
+
+msgid "好奇心强"
+msgstr "Curious"
+
+msgid "需要陪伴"
+msgstr "Needs company"
+
+msgid "温顺"
+msgstr "Gentle"
+
+msgid "适合上班族"
+msgstr "Great for working owners"
+
+msgid "话多"
+msgstr "Talkative"
+
+msgid "需要围栏"
+msgstr "Needs a fenced yard"
+
+msgid "爱睡觉"
+msgstr "Loves naps"
+
+msgid "服从性高"
+msgstr "Highly obedient"
+
+msgid "温和"
+msgstr "Mild-mannered"
+
+# ---------------------------------------------------------------------------
+# 受控词表：城市与区县
+# ---------------------------------------------------------------------------
+msgid "上海市"
+msgstr "Shanghai"
+
+msgid "北京市"
+msgstr "Beijing"
+
+msgid "广州市"
+msgstr "Guangzhou"
+
+msgid "成都市"
+msgstr "Chengdu"
+
+msgid "杭州市"
+msgstr "Hangzhou"
+
+msgid "闵行区"
+msgstr "Minhang District"
+
+msgid "浦东新区"
+msgstr "Pudong New Area"
+
+msgid "昌平区"
+msgstr "Changping District"
+
+msgid "白云区"
+msgstr "Baiyun District"
+
+msgid "温江区"
+msgstr "Wenjiang District"
+
+msgid "余杭区"
+msgstr "Yuhang District"
+
+# ---------------------------------------------------------------------------
+# 受控词表：年龄段与排序
+# ---------------------------------------------------------------------------
+msgid "幼犬（1 岁以下）"
+msgstr "Puppy (under 1 year)"
+
+msgid "青年（1 - 3 岁）"
+msgstr "Young (1 - 3 years)"
+
+msgid "成年（3 - 7 岁）"
+msgstr "Adult (3 - 7 years)"
+
+msgid "老年（7 岁以上）"
+msgstr "Senior (over 7 years)"
+
+msgid "距离最近"
+msgstr "Nearest first"
+
+msgid "最新发布"
+msgstr "Newest first"
+
+msgid "年龄从小到大"
+msgstr "Youngest first"
+
+msgid "名字排序"
+msgstr "By name"
+
+# ---------------------------------------------------------------------------
+# 受控词表：联系方式
+# ---------------------------------------------------------------------------
+msgid "短信"
+msgstr "Text message"
+
+msgid "电话"
+msgstr "Phone call"
+
+msgid "邮件"
+msgstr "Email"
+
+# ---------------------------------------------------------------------------
+# 表单：字段标签与选项
+# ---------------------------------------------------------------------------
+msgid "动物呼名"
+msgstr "Animal name"
+
+msgid "申请人姓名"
+msgstr "Your name(s)"
+
+msgid "联系地址"
+msgstr "Address"
+
+msgid "城市 / 省州 / 邮编"
+msgstr "Town, state, zip"
+
+msgid "联系电话"
+msgstr "Preferred phone"
+
+msgid "这份领养是送给他人"
+msgstr "This pet is meant to be a gift"
+
+msgid "新宠物的家庭成员构成"
+msgstr "Tell us about the members of the new pet household"
+
+msgid "家中现有宠物情况"
+msgstr "Tell us about pets at home"
+
+msgid "其他希望分享的信息"
+msgstr "Other information you want to share"
+
+msgid "希望与救助站沟通的话题"
+msgstr "Topics you would like to discuss with the shelter"
+
+msgid "其他疑问"
+msgstr "Other questions"
+
+msgid "感兴趣的额外服务与支持"
+msgstr "Extra services and support you are interested in"
+
+msgid "我确认以上信息真实有效"
+msgstr "I confirm the information above is accurate"
+
+# ---------------------------------------------------------------------------
+# 表单：家中现有宠物选项
+# ---------------------------------------------------------------------------
+msgid "家中有狗"
+msgstr "We have one or more dogs"
+
+msgid "家中有猫"
+msgstr "We have one or more cats"
+
+msgid "家中有小动物"
+msgstr "We have one or more small animals"
+
+msgid "希望协助介绍新宠物与现有宠物认识"
+msgstr "We would like help introducing a new pet to the pets at home"
+
+msgid "家中没有饲养宠物"
+msgstr "We do not have any pets at home"
+
+# ---------------------------------------------------------------------------
+# 表单：希望沟通的养护话题
+# ---------------------------------------------------------------------------
+msgid "该宠物的喂养方式"
+msgstr "Feeding this pet"
+
+msgid "如厕 / 猫砂盆训练"
+msgstr "House-training / litter box training"
+
+msgid "美容与修剪指甲"
+msgstr "Grooming and nail trimming"
+
+msgid "运动、玩具与互动活动"
+msgstr "Exercise, toys and fun activities"
+
+msgid "居家幼宠防护"
+msgstr "Puppy-proofing your home"
+
+msgid "寻找训练师"
+msgstr "Finding a trainer"
+
+msgid "跳蚤与蜱虫预防"
+msgstr "Flea and tick prevention"
+
+msgid "心丝虫预防"
+msgstr "Heartworm prevention"
+
+msgid "与新宠物介绍认识"
+msgstr "Introducing this pet to other pets"
+
+msgid "芯片与其他身份标识"
+msgstr "Microchips and other ID options"
+
+msgid "寻找兽医"
+msgstr "Finding a veterinarian"
+
+msgid "绝育手术"
+msgstr "Spaying and neutering"
+
+msgid "笼内训练"
+msgstr "Crate training"
+
+msgid "与新宠物介绍认识（儿童）"
+msgstr "Introducing this pet to children"
+
+msgid "基础训练"
+msgstr "Basic training"
+
+msgid "兽医护理费用预估"
+msgstr "Estimated cost of veterinary care"
+
+# ---------------------------------------------------------------------------
+# 表单：额外服务与支持
+# ---------------------------------------------------------------------------
+msgid "为新领养宠物或家中宠物提供项圈与身份牌"
+msgstr "A collar and ID tag for your adopted pet or a pet at home"
+
+msgid "提供一袋该宠物正在食用的宠物粮"
+msgstr "A bag of the food your adopted pet has been eating"
+
+msgid "告知基础宠物用品的购买地点"
+msgstr "Where to pick up basic pet supplies"
+
+msgid "本次领养可借用航空箱或运输笼"
+msgstr "Borrow a crate or carrier with this adoption"
+
+msgid "下一次免费 / 低价疫苗接种活动信息"
+msgstr "Information on the next free or low-cost vaccination event"
+
+msgid "下一次免费 / 低价芯片植入活动信息"
+msgstr "Information on the next free or low-cost microchip implantation event"
+
+msgid "宠物食品援助站信息"
+msgstr "Information about our pet food pantry"
+
+msgid "训练课程信息"
+msgstr "Information about our training classes"
+
+msgid "住房支持信息（含宠物押金与费用协助）"
+msgstr "Information about housing support, including help with pet fees and deposits"
+
+msgid "免费 / 低价绝育及其他兽医服务信息"
+msgstr "Information about free or low-cost spay/neuter and other veterinary services"
+
+msgid "志愿者或寄养家庭招募信息"
+msgstr "Information about volunteering or fostering with us"
+
+msgid "资金或实物捐赠支持方式信息"
+msgstr "Information about supporting us with a financial or in-kind donation"

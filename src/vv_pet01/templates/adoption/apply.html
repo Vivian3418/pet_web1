@@ -1,0 +1,255 @@
+{#
+  领养申请表模板（中英双语）。
+
+  字段结构参考 Humane World for Animals 发布的
+  “Adopters Welcome: Sample questionnaire”，分为五个部分：
+  心仪的动物、申请人信息、家庭成员与家中宠物、希望沟通的话题、额外服务。
+
+  模板变量：
+  * ``form``: ``AdoptionApplicationForm`` 实例。
+  * ``dog``: 当前申请对应的狗狗档案（用于顶部概览卡片与隐藏字段预填）。
+  * ``origin`` / ``location_params``: 定位状态，用于在返回链接中保留定位。
+
+  宏 ``field_errors`` 统一渲染校验错误，错误文案为中文 msgid，
+  在此通过 gettext 翻译。
+#}
+{% extends "base.html" %}
+
+{% macro field_errors(field) %}
+    {% for error in field.errors %}
+        <div class="invalid-feedback d-block">{{ _(error) }}</div>
+    {% endfor %}
+{% endmacro %}
+
+{% macro text_input(field, placeholder='') %}
+    {{ field(class="form-control" + (" is-invalid" if field.errors else ""),
+             placeholder=placeholder) }}
+    {{ field_errors(field) }}
+{% endmacro %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><span>{{ _('领养宠物') }}</span></li>
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('adoption.dogs', **location_params) }}">{{ _('领养狗狗') }}</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('adoption.dog_detail', dog_id=dog.id, **location_params) }}">{{ dog.name }}</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        {# 待领养动物概览，确认申请对象 #}
+        <div class="apply-subject">
+            <img class="apply-subject__image"
+                 src="{{ dog.image }}"
+                 alt="{{ dog.name }}（{{ _(dog.breed) }}）"
+                 onerror="this.onerror=null;this.src='https://placehold.co/240x240/EFF6FF/2563EB?text={{ dog.name }}';">
+            <div class="apply-subject__body">
+                <p class="apply-subject__eyebrow">{{ _('本次申请的动物') }}</p>
+                <h2 class="apply-subject__name">{{ dog.name }}</h2>
+                <p class="apply-subject__meta">
+                    {{ _(dog.breed) }} · {{ _(dog.gender) }} · {{ dog.age_text }} · {{ _(dog.size) }}
+                </p>
+                <p class="apply-subject__shelter">
+                    {{ _('来自 %(shelter)s（%(city)s）', shelter=dog.shelter.name, city=_(dog.city)) }}
+                </p>
+            </div>
+            <a class="btn btn-outline-primary apply-subject__back"
+               href="{{ url_for('adoption.dog_detail', dog_id=dog.id, **location_params) }}">
+                {{ _('返回详情') }}
+            </a>
+        </div>
+
+        <form class="apply-form" method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            {# ---------------------- 1. 心仪的动物 ---------------------- #}
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('一、领养对象') }}</legend>
+
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.animal_name.id }}">
+                        {{ _(form.animal_name.label.text) }}
+                    </label>
+                    {{ text_input(form.animal_name) }}
+                    <p class="form-hint">{{ _('已根据你查看的狗狗自动填写，如有变化可直接修改。') }}</p>
+                </div>
+            </fieldset>
+
+            {# ---------------------- 2. 申请人信息 ---------------------- #}
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('二、申请人信息') }}</legend>
+
+                <div class="row g-3">
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.applicant_name.id }}">
+                            {{ _(form.applicant_name.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ text_input(form.applicant_name) }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.email.id }}">
+                            {{ _(form.email.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ text_input(form.email, 'name@example.com') }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.address.id }}">
+                            {{ _(form.address.label.text) }}
+                        </label>
+                        {{ text_input(form.address) }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.town_state_zip.id }}">
+                            {{ _(form.town_state_zip.label.text) }}
+                        </label>
+                        {{ text_input(form.town_state_zip) }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.preferred_phone.id }}">
+                            {{ _(form.preferred_phone.label.text) }}
+                        </label>
+                        {{ text_input(form.preferred_phone) }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <span class="form-label form-label--sm">{{ _(form.preferred_contact.label.text) }}</span>
+                        <div class="option-row">
+                            {% for option in form.preferred_contact %}
+                                <div class="form-check form-check-inline">
+                                    {{ option(class="form-check-input" + (" is-invalid" if form.preferred_contact.errors else "")) }}
+                                    <label class="form-check-label" for="{{ option.id }}">{{ _(option.label.text) }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {{ field_errors(form.preferred_contact) }}
+                    </div>
+                </div>
+
+                <div class="apply-field apply-field--check">
+                    <div class="form-check">
+                        {{ form.is_gift(class="form-check-input") }}
+                        <label class="form-check-label" for="{{ form.is_gift.id }}">
+                            {{ _(form.is_gift.label.text) }}
+                        </label>
+                    </div>
+                    <p class="form-hint">{{ _('如勾选，请以收礼人的实际情况回答以下问题。') }}</p>
+                </div>
+
+                <div class="apply-notice">
+                    {{ _('我们欢迎租房或居住公寓的领养人。需要提醒的是，部分房东或物业可能对宠物体型、品种、数量有要求，或需要额外押金；如需协助沟通，请在下方说明，我们会提供支持。') }}
+                </div>
+            </fieldset>
+
+            {# ----------------- 3. 家庭成员与家中宠物 ----------------- #}
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('三、家庭成员与家中宠物') }}</legend>
+
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.household_members.id }}">
+                        {{ _(form.household_members.label.text) }} <span class="req">*</span>
+                    </label>
+                    {{ text_input(form.household_members,
+                                  _('例如：同住人 3 位，其中一位 6 岁儿童，白天家中有人。')) }}
+                </div>
+
+                <div class="apply-field">
+                    <span class="form-label form-label--sm">{{ _(form.pets_at_home.label.text) }}</span>
+                    <div class="option-grid">
+                        {% for option in form.pets_at_home %}
+                            <div class="form-check">
+                                {{ option(class="form-check-input") }}
+                                <label class="form-check-label" for="{{ option.id }}">{{ _(option.label.text) }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.other_info.id }}">
+                        {{ _(form.other_info.label.text) }}
+                    </label>
+                    {{ text_input(form.other_info) }}
+                </div>
+            </fieldset>
+
+            {# ------------------- 4. 希望沟通的话题 ------------------- #}
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('四、希望沟通的养护话题') }}</legend>
+                <p class="apply-section__hint">
+                    {{ _('勾选你希望救助站详细介绍的内容，工作人员会在沟通中逐项说明。') }}
+                </p>
+
+                <div class="option-grid option-grid--three">
+                    {% for option in form.discussion_topics %}
+                        <div class="form-check">
+                            {{ option(class="form-check-input") }}
+                            <label class="form-check-label" for="{{ option.id }}">{{ _(option.label.text) }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.other_questions.id }}">
+                        {{ _(form.other_questions.label.text) }}
+                    </label>
+                    {{ text_input(form.other_questions) }}
+                </div>
+            </fieldset>
+
+            {# --------------------- 5. 额外服务 --------------------- #}
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('五、感兴趣的额外服务') }}</legend>
+                <p class="apply-section__hint">
+                    {{ _('以下为救助站可提供的支持，勾选后我们会一并准备。') }}
+                </p>
+
+                <div class="option-grid option-grid--two">
+                    {% for option in form.extra_services %}
+                        <div class="form-check">
+                            {{ option(class="form-check-input") }}
+                            <label class="form-check-label" for="{{ option.id }}">{{ _(option.label.text) }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            {# --------------------- 6. 确认提交 --------------------- #}
+            <fieldset class="apply-section apply-section--submit">
+                <div class="form-check apply-confirm">
+                    {{ form.confirm_accuracy(class="form-check-input" + (" is-invalid" if form.confirm_accuracy.errors else "")) }}
+                    <label class="form-check-label" for="{{ form.confirm_accuracy.id }}">
+                        {{ _(form.confirm_accuracy.label.text) }}
+                    </label>
+                </div>
+                {{ field_errors(form.confirm_accuracy) }}
+
+                <p class="apply-source">
+                    {{ _('本表参考 Humane World for Animals 的 Adopters Welcome 样本问卷设计。') }}
+                </p>
+
+                <div class="apply-actions">
+                    <button class="btn btn-primary btn-lg" type="submit">{{ _('提交申请') }}</button>
+                    <a class="btn btn-outline-secondary btn-lg"
+                       href="{{ url_for('adoption.dog_detail', dog_id=dog.id, **location_params) }}">
+                        {{ _('取消') }}
+                    </a>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</section>
+{% endblock %}

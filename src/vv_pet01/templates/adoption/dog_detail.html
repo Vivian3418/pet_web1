@@ -1,0 +1,143 @@
+{#
+  狗狗详情页模板（中英双语）。
+
+  展示单只狗狗的完整档案、性格标签与所属救助站信息，
+  并在已获得定位时展示「距你多远」。主行动按钮「我要领养」直接跳转领养申请表。
+
+  模板变量：
+  * ``dog``: 已补充 shelter、age_text、distance_km 等派生字段的狗狗档案。
+  * ``origin``: 用户当前位置 ``(纬度, 经度)``，未定位时为 None。
+  * ``location_params``: 仅包含 lat / lng 的查询参数，用于保留定位状态。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ dog.name }} · {{ _('领养狗狗') }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><span>{{ _('领养宠物') }}</span></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('adoption.dogs', **location_params) }}">{{ _('领养狗狗') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ dog.name }}</li>
+            </ol>
+        </nav>
+        <h1 class="page-hero__title">
+            {{ dog.name }}
+            <span class="dog-status dog-status--{{ dog.status_slug }}">{{ _(dog.status) }}</span>
+        </h1>
+        <p class="page-hero__desc">
+            {{ _(dog.breed) }} · {{ _('来自 %(shelter)s', shelter=dog.shelter.name) }}
+        </p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <figure class="detail-media">
+                    <img class="detail-media__image"
+                         src="{{ dog.image }}"
+                         alt="{{ dog.name }}（{{ _(dog.breed) }}）"
+                         onerror="this.onerror=null;this.src='https://placehold.co/800x600/EFF6FF/2563EB?text={{ dog.name }}';">
+                    {% if dog.distance_km is not none %}
+                        <figcaption class="detail-media__badge">
+                            {{ _('距你约 %(km)s km', km=dog.distance_km) }}
+                        </figcaption>
+                    {% endif %}
+                </figure>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="detail-card">
+                    <h2 class="detail-card__title">{{ _('基本信息') }}</h2>
+                    <dl class="detail-list">
+                        <div class="detail-list__row">
+                            <dt>{{ _('品种') }}</dt>
+                            <dd>{{ _(dog.breed) }}</dd>
+                        </div>
+                        <div class="detail-list__row">
+                            <dt>{{ _('性别') }}</dt>
+                            <dd>{{ _(dog.gender) }}</dd>
+                        </div>
+                        <div class="detail-list__row">
+                            <dt>{{ _('年龄') }}</dt>
+                            <dd>{{ dog.age_text }}</dd>
+                        </div>
+                        <div class="detail-list__row">
+                            <dt>{{ _('体型 / 体重') }}</dt>
+                            <dd>{{ _(dog.size) }} · {{ dog.weight_kg }} kg</dd>
+                        </div>
+                        <div class="detail-list__row">
+                            <dt>{{ _('疫苗') }}</dt>
+                            <dd>{{ _('已完成') if dog.vaccinated else _('待接种') }}</dd>
+                        </div>
+                        <div class="detail-list__row">
+                            <dt>{{ _('绝育') }}</dt>
+                            <dd>{{ _('已完成') if dog.neutered else _('待安排') }}</dd>
+                        </div>
+                        <div class="detail-list__row">
+                            <dt>{{ _('入站日期') }}</dt>
+                            <dd>{{ dog.intake_date }}</dd>
+                        </div>
+                    </dl>
+
+                    <h2 class="detail-card__title detail-card__title--spaced">{{ _('性格标签') }}</h2>
+                    <ul class="chip-list">
+                        {% for trait in dog.traits %}
+                            <li class="chip">{{ _(trait) }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h2 class="detail-card__title detail-card__title--spaced">{{ _('它的救助故事') }}</h2>
+                    <p class="detail-card__text">{{ dog.description }}</p>
+
+                    <div class="detail-actions">
+                        <a class="btn btn-primary btn-lg"
+                           href="{{ url_for('adoption.apply', dog_id=dog.id, **location_params) }}">
+                            {{ _('我要领养') }}
+                        </a>
+                        <a class="btn btn-outline-primary btn-lg"
+                           href="{{ url_for('adoption.process') }}">{{ _('了解领养流程') }}</a>
+                        <a class="btn btn-link btn-lg"
+                           href="{{ url_for('adoption.dogs', **location_params) }}">{{ _('返回搜索') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="shelter-detail">
+            <h2 class="shelter-detail__title">{{ _('所属救助站') }}</h2>
+            <div class="shelter-detail__grid">
+                <div class="shelter-detail__item">
+                    <span class="shelter-detail__label">{{ _('名称') }}</span>
+                    <span class="shelter-detail__value">{{ dog.shelter.name }}</span>
+                </div>
+                <div class="shelter-detail__item">
+                    <span class="shelter-detail__label">{{ _('城市') }}</span>
+                    <span class="shelter-detail__value">{{ _(dog.shelter.city) }}{{ _(dog.shelter.district) }}</span>
+                </div>
+                <div class="shelter-detail__item">
+                    <span class="shelter-detail__label">{{ _('救助站电话') }}</span>
+                    <span class="shelter-detail__value">{{ dog.shelter.phone }}</span>
+                </div>
+                <div class="shelter-detail__item">
+                    <span class="shelter-detail__label">{{ _('成立年份') }}</span>
+                    <span class="shelter-detail__value">{{ dog.shelter.founded_year }}</span>
+                </div>
+                <div class="shelter-detail__item shelter-detail__item--wide">
+                    <span class="shelter-detail__label">{{ _('地址') }}</span>
+                    <span class="shelter-detail__value">{{ dog.shelter.address }}</span>
+                </div>
+                <div class="shelter-detail__item shelter-detail__item--wide">
+                    <span class="shelter-detail__label">{{ _('简介') }}</span>
+                    <span class="shelter-detail__value">{{ dog.shelter.description }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

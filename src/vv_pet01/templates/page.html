@@ -1,0 +1,55 @@
+{#
+  通用占位页面模板。
+
+  供尚未开发的二级子页面复用，路由通过 ``page_title`` 与 ``page_desc``
+  两个变量传入已翻译的页面名称与占位说明，避免重复维护 HTML 文件。
+
+  模板变量：
+  * ``page_title``: 当前页面名称（已翻译，必填）。
+  * ``page_desc``: 页面占位说明（已翻译，选填）。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                {% if blueprint_labels.get(request.blueprint) and request.blueprint != 'main' %}
+                    <li class="breadcrumb-item">
+                        <span>{{ blueprint_labels.get(request.blueprint) }}</span>
+                    </li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">
+            {{ page_desc or _('本页面正在建设中，敬请期待。') }}
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="placeholder-card">
+            <div class="placeholder-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none"
+                     stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M4 20h16"/>
+                    <path d="M6 20V10l6-4 6 4v10"/>
+                    <path d="M10 20v-5h4v5"/>
+                </svg>
+            </div>
+            <h2 class="placeholder-card__title">{{ page_title }}</h2>
+            <p class="placeholder-card__text">
+                {{ _('当前页面仅展示页面名称，后续将在此填充具体的公益内容与交互功能。') }}
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

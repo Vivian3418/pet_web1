@@ -1,0 +1,193 @@
+{#
+  全站布局基类模板（中英双语）。
+
+  职责：
+  * 声明页面语言（``lang`` 属性）并引入 Bootstrap 5（CDN）与站点自定义样式。
+  * 提供顶部下拉式导航条、语言切换器与页脚，供所有页面复用。
+  * 暴露 ``title``、``content`` 与 ``scripts`` 三个可覆写块。
+
+  模板变量（由上下文处理器注入）：
+  * ``site_nav``: 已翻译的导航菜单结构。
+  * ``site_name``: 站点名称。
+  * ``site_slogan``: 站点标语（msgid）。
+  * ``languages``: 支持的语言映射，如 ``{"zh": "中文", "en": "English"}``。
+  * ``current_language``: 当前语言代码。
+  * ``switch_language_url``: 生成切换语言链接的函数。
+#}
+<!DOCTYPE html>
+<html lang="{{ 'en' if is_english else 'zh-CN' }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ _('%(site)s —— 动物保护、宠物救助与宠物领养公益平台', site=site_name) }}">
+    <title>{% block title %}{{ _('首页') }}{% endblock %} · {{ site_name }}</title>
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%232563EB'/%3E%3Cpath d='M16 23c-3.6 0-6.5-2.2-6.5-5 0-2.5 2.9-4.5 6.5-4.5s6.5 2 6.5 4.5c0 2.8-2.9 5-6.5 5z' fill='%23fff'/%3E%3Ccircle cx='9.5' cy='10' r='2.2' fill='%23fff'/%3E%3Ccircle cx='15' cy='7.5' r='2.2' fill='%23fff'/%3E%3Ccircle cx='21' cy='7.5' r='2.2' fill='%23fff'/%3E%3Ccircle cx='26' cy='11' r='2.2' fill='%23fff'/%3E%3C/svg%3E">
+
+    <!-- Bootstrap 5 样式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+    <!-- 站点自定义样式 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="site-body">
+
+<a class="visually-hidden-focusable skip-link" href="#main-content">{{ _('跳到主要内容') }}</a>
+
+<header class="site-header">
+    <nav class="navbar navbar-expand-lg navbar-light site-navbar" aria-label="{{ _('站点主导航') }}">
+        <div class="container">
+            {# 品牌标识：站点名称 + 标语 #}
+            <a class="navbar-brand site-brand" href="{{ url_for('main.index') }}">
+                <span class="site-brand__mark" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
+                        <circle cx="16" cy="16" r="16" fill="url(#brandGradient)"/>
+                        <path d="M16 23.5c-3.8 0-6.9-2.3-6.9-5.3 0-2.7 3.1-4.8 6.9-4.8s6.9 2.1 6.9 4.8c0 3-3.1 5.3-6.9 5.3z"
+                              fill="#ffffff"/>
+                        <circle cx="9.4" cy="10.2" r="2.3" fill="#ffffff"/>
+                        <circle cx="15" cy="7.6" r="2.3" fill="#ffffff"/>
+                        <circle cx="21" cy="7.6" r="2.3" fill="#ffffff"/>
+                        <circle cx="26" cy="11.2" r="2.3" fill="#ffffff"/>
+                        <defs>
+                            <linearGradient id="brandGradient" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#3B82F6"/>
+                                <stop offset="100%" stop-color="#1D4ED8"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </span>
+                <span class="site-brand__text">
+                    <span class="site-brand__name">{{ site_name }}</span>
+                    <span class="site-brand__tagline">{{ _(site_slogan) }}</span>
+                </span>
+            </a>
+
+            <button class="navbar-toggler site-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#primaryNavbar"
+                    aria-controls="primaryNavbar"
+                    aria-expanded="false"
+                    aria-label="{{ _('展开导航菜单') }}">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="primaryNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 site-nav">
+                    {% for item in site_nav %}
+                        {% set is_active = request.blueprint == item.blueprint %}
+                        {% if item.children %}
+                            {# 含二级子菜单：使用 Bootstrap 下拉组件 #}
+                            <li class="nav-item dropdown site-nav__item">
+                                <a class="nav-link dropdown-toggle site-nav__link{{ ' is-active' if is_active }}"
+                                   href="{{ url_for(item.endpoint) }}"
+                                   id="nav-{{ item.blueprint }}"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    {{ item.label }}
+                                </a>
+                                <ul class="dropdown-menu site-dropdown"
+                                    aria-labelledby="nav-{{ item.blueprint }}">
+                                    {% for child in item.children %}
+                                        <li>
+                                            <a class="dropdown-item site-dropdown__item{{ ' is-active' if request.endpoint == child.endpoint }}"
+                                               href="{{ url_for(child.endpoint) }}">
+                                                {{ child.label }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% else %}
+                            {# 无子菜单：普通链接 #}
+                            <li class="nav-item site-nav__item">
+                                <a class="nav-link site-nav__link{{ ' is-active' if is_active }}"
+                                   href="{{ url_for(item.endpoint) }}">{{ item.label }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {# 语言切换器：切换到同一页面的另一语言版本 #}
+                    <li class="nav-item dropdown site-nav__item site-lang">
+                        <button class="nav-link dropdown-toggle site-nav__link site-lang__toggle"
+                                type="button"
+                                id="langSwitcher"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            <span class="site-lang__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                                     stroke="currentColor" stroke-width="1.7"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="9"/>
+                                    <path d="M3 12h18"/>
+                                    <path d="M12 3c2.4 2.6 3.6 5.7 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.7-3.6-9S9.6 5.6 12 3z"/>
+                                </svg>
+                            </span>
+                            {{ languages[current_language] }}
+                        </button>
+                        <ul class="dropdown-menu site-dropdown site-dropdown--end"
+                            aria-labelledby="langSwitcher">
+                            {% for code, label in languages.items() %}
+                                <li>
+                                    <a class="dropdown-item site-dropdown__item{{ ' is-active' if code == current_language }}"
+                                       href="{{ switch_language_url(code) }}"
+                                       hreflang="{{ code }}">{{ label }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main id="main-content" class="site-main">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="row gy-4 align-items-start">
+            <div class="col-lg-5">
+                <p class="site-footer__brand">{{ site_name }}</p>
+                <p class="site-footer__desc">
+                    {{ _('%(slogan)s。我们致力于动物保护、宠物救助与宠物领养，让每一次相遇都成为温暖的开始。', slogan=_(site_slogan)) }}
+                </p>
+            </div>
+            <div class="col-6 col-lg-3">
+                <p class="site-footer__title">{{ _('领养宠物') }}</p>
+                <ul class="site-footer__links">
+                    <li><a href="{{ url_for('adoption.dogs') }}">{{ _('领养狗狗') }}</a></li>
+                    <li><a href="{{ url_for('adoption.cats') }}">{{ _('领养猫咪') }}</a></li>
+                    <li><a href="{{ url_for('adoption.others') }}">{{ _('其他宠物') }}</a></li>
+                    <li><a href="{{ url_for('adoption.process') }}">{{ _('领养流程') }}</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-4">
+                <p class="site-footer__title">{{ _('参与公益') }}</p>
+                <ul class="site-footer__links">
+                    <li><a href="{{ url_for('charity.volunteer') }}">{{ _('成为志愿者') }}</a></li>
+                    <li><a href="{{ url_for('charity.donate') }}">{{ _('捐赠') }}</a></li>
+                    <li><a href="{{ url_for('charity.foster') }}">{{ _('寄养宠物') }}</a></li>
+                    <li><a href="{{ url_for('protection.welfare') }}">{{ _('动物福利') }}</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="site-footer__divider">
+        <p class="site-footer__copyright">
+            © 2026 {{ site_name }} · {{ _('公益演示站点 · 本站内容仅用于功能演示') }}
+        </p>
+    </div>
+</footer>
+
+<!-- Bootstrap 5 JS（含 Popper），用于下拉菜单等交互组件 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,37 @@
+# vv_pet01 服务编排配置
+# 用法：docker compose up --build -d
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vv-pet01:latest
+    container_name: vv_pet01_web
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # 生产配置；SECRET_KEY 建议通过宿主机环境变量注入，勿写入明文
+      FLASK_CONFIG: production
+      SECRET_KEY: ${SECRET_KEY:-please-override-this-secret-in-env}
+      # SQLite 数据库文件路径，指向被数据卷持久化的 instance 目录
+      VV_PET01_DATABASE: /app/instance/vv_pet01.sqlite
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-2}
+      GUNICORN_LOG_LEVEL: ${GUNICORN_LOG_LEVEL:-info}
+    volumes:
+      # 持久化 SQLite 数据库，容器重建后申请记录不丢失
+      - vv_pet01_data:/app/instance
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/').read()"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  vv_pet01_data:

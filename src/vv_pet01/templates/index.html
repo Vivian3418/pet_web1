@@ -1,0 +1,152 @@
+{#
+  站点首页模板（中英双语）。
+
+  页面结构（自上而下）：
+  1. Hero：站点品牌、公益标语与关键数据
+  2. 领养流程：四步流程图示，简洁明确
+  3. 行动号召：捐赠与寄养入口
+  4. 救助故事：可横向滚动的图片故事卡片（页面最底端）
+
+  模板变量：
+  * ``site_name``: 站点名称。
+  * ``site_slogan``: 站点标语（msgid，需翻译）。
+  * ``stories``: 救助故事列表（已本地化的狗狗档案，供卡片展示）。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ _('首页') }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-6">
+                <span class="hero__badge">{{ _('动物保护 · 宠物救助 · 宠物领养') }}</span>
+                <h1 class="hero__title">
+                    {{ _('让每一个生命') }}<br>
+                    {{ _('都被') }}<span class="hero__title-accent">{{ _('温柔以待') }}</span>
+                </h1>
+                <p class="hero__desc">
+                    {{ _('%(site)s 连接流浪动物、救助机构与爱心家庭，用透明可信的领养机制，让等待被看见，让陪伴有归处。', site=site_name) }}
+                </p>
+                <dl class="hero__stats">
+                    <div class="hero__stat">
+                        <dt>12,860+</dt>
+                        <dd>{{ _('成功领养') }}</dd>
+                    </div>
+                    <div class="hero__stat">
+                        <dt>328</dt>
+                        <dd>{{ _('合作救助站') }}</dd>
+                    </div>
+                    <div class="hero__stat">
+                        <dt>5,400+</dt>
+                        <dd>{{ _('注册志愿者') }}</dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="col-lg-6">
+                <figure class="hero__figure">
+                    <img class="hero__image"
+                         src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&amp;fit=crop&amp;w=1200&amp;q=80"
+                         alt="{{ _('志愿者与待领养的狗狗互动') }}"
+                         loading="eager"
+                         onerror="this.onerror=null;this.src='https://placehold.co/1200x900/2563EB/FFFFFF?text=vv_pet01';">
+                    <figcaption class="hero__caption">
+                        <span class="hero__caption-dot" aria-hidden="true"></span>
+                        {{ _('每一次领养，都是一次生命的重启') }}
+                    </figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ------------------------------ 领养流程 ------------------------------ #}
+<section class="section section--flow">
+    <div class="container">
+        <div class="section__head">
+            <h2 class="section__title">{{ _('领养流程') }}</h2>
+            <p class="section__desc">{{ _('从提交申请到接它回家，只需四步。') }}</p>
+        </div>
+
+        <ol class="flow">
+            <li class="flow__step">
+                <span class="flow__num" aria-hidden="true">01</span>
+                <h3 class="flow__title">{{ _('在线提交申请') }}</h3>
+                <p class="flow__text">{{ _('填写领养申请表，说明居住环境、家庭成员与养宠经验。') }}</p>
+            </li>
+            <li class="flow__step">
+                <span class="flow__num" aria-hidden="true">02</span>
+                <h3 class="flow__title">{{ _('救助站联系沟通') }}</h3>
+                <p class="flow__text">{{ _('工作人员会在 3 个工作日内联系你，沟通养护细节与双方期待。') }}</p>
+            </li>
+            <li class="flow__step">
+                <span class="flow__num" aria-hidden="true">03</span>
+                <h3 class="flow__title">{{ _('见面与匹配') }}</h3>
+                <p class="flow__text">{{ _('到救助站与狗狗见面，确认性格与生活方式是否契合。') }}</p>
+            </li>
+            <li class="flow__step">
+                <span class="flow__num" aria-hidden="true">04</span>
+                <h3 class="flow__title">{{ _('签署协议与交接') }}</h3>
+                <p class="flow__text">{{ _('签署领养协议并接它回家，1 个月内我们会回访跟进。') }}</p>
+            </li>
+        </ol>
+    </div>
+</section>
+
+{# ------------------------------ 行动号召 ------------------------------ #}
+<section class="cta">
+    <div class="container">
+        <div class="cta__panel">
+            <h2 class="cta__title">{{ _('你的一个小小行动，就是它的一生') }}</h2>
+            <p class="cta__desc">
+                {{ _('加入 %(site)s，用领养代替购买，用陪伴代替遗弃。', site=site_name) }}
+            </p>
+            <div class="cta__actions">
+                <a class="btn btn-light btn-lg cta__btn" href="{{ url_for('charity.donate') }}">{{ _('我要捐赠') }}</a>
+                <a class="btn btn-outline-light btn-lg cta__btn" href="{{ url_for('charity.foster') }}">{{ _('申请寄养') }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ------------------------------ 救助故事 ------------------------------ #}
+<section class="section section--stories">
+    <div class="container">
+        <div class="section__head">
+            <h2 class="section__title">{{ _('救助故事') }}</h2>
+            <p class="section__desc">{{ _('每一个故事都始于一次救助，正在等待一个结局。') }}</p>
+        </div>
+    </div>
+
+    <div class="stories">
+        <ul class="stories__track"
+            tabindex="0"
+            role="region"
+            aria-label="{{ _('救助故事列表') }}">
+            {% for dog in stories %}
+                <li class="story-card">
+                    <figure class="story-card__media">
+                        <img class="story-card__image"
+                             src="{{ dog.story_image }}"
+                             alt="{{ _('救助人与 %(name)s 的合照', name=dog.name) }}"
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x420/EFF6FF/2563EB?text={{ dog.name }}';">
+                    </figure>
+                    <div class="story-card__body">
+                        <p class="story-card__meta">{{ _(dog.breed) }} · {{ _(dog.city) }}</p>
+                        <h3 class="story-card__name">{{ dog.name }}</h3>
+                        <p class="story-card__text">{{ dog.description }}</p>
+                        <a class="story-card__link"
+                           href="{{ url_for('adoption.dog_detail', dog_id=dog.id) }}">
+                            {{ _('查看详情') }} →
+                        </a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <p class="stories__hint">{{ _('左右滑动查看更多故事') }}</p>
+    </div>
+</section>
+{% endblock %}

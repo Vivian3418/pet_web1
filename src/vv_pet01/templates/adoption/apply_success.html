@@ -1,0 +1,106 @@
+{#
+  领养申请回执页模板（中英双语）。
+
+  提交成功后展示申请编号、申请概要、所勾选的话题与后续流程说明，
+  便于申请人截图留存或打印。
+
+  模板变量：
+  * ``application``: 申请记录字典（含 reference、applicant_name、
+    dog_display_name、created_at_display、各类多选列表等）。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--success">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('adoption.dogs') }}">{{ _('领养狗狗') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <span class="success-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+            </svg>
+        </span>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        <div class="receipt">
+            <div class="receipt__head">
+                <div>
+                    <p class="receipt__label">{{ _('申请编号') }}</p>
+                    <p class="receipt__reference">{{ application.reference }}</p>
+                </div>
+                <span class="receipt__status">{{ _(application.status_label) }}</span>
+            </div>
+
+            <dl class="detail-list receipt__list">
+                <div class="detail-list__row">
+                    <dt>{{ _('申请人') }}</dt>
+                    <dd>{{ application.applicant_name }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('申请的动物') }}</dt>
+                    <dd>{{ application.dog_display_name or _('待救助站推荐') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('电子邮箱') }}</dt>
+                    <dd>{{ application.email }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('最佳联系方式') }}</dt>
+                    <dd>{{ _(application.preferred_contact) if application.preferred_contact else _('未填写') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('提交时间') }}</dt>
+                    <dd>{{ application.created_at_display }}</dd>
+                </div>
+            </dl>
+
+            {% if application.discussion_topics %}
+                <h2 class="receipt__title">{{ _('你希望沟通的话题') }}</h2>
+                <ul class="chip-list">
+                    {% for topic in application.discussion_topics %}
+                        <li class="chip">{{ _(topic) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if application.extra_services %}
+                <h2 class="receipt__title">{{ _('你感兴趣的额外服务') }}</h2>
+                <ul class="chip-list">
+                    {% for service in application.extra_services %}
+                        <li class="chip">{{ _(service) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <h2 class="receipt__title">{{ _('接下来的流程') }}</h2>
+            <ol class="receipt__steps">
+                <li>{{ _('救助站会在 3 个工作日内通过你选择的方式联系你。') }}</li>
+                <li>{{ _('双方沟通养护细节，并确认居住环境是否符合要求。') }}</li>
+                <li>{{ _('签署领养协议，约定时间到救助站与狗狗见面。') }}</li>
+                <li>{{ _('完成交接，进入回访期，我们会在 1 个月内跟进适应情况。') }}</li>
+            </ol>
+
+            <div class="detail-actions">
+                <a class="btn btn-primary"
+                   href="{{ url_for('adoption.applications') }}">{{ _('查看申请记录') }}</a>
+                <a class="btn btn-outline-primary"
+                   href="{{ url_for('adoption.dogs') }}">{{ _('继续浏览待领养狗狗') }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

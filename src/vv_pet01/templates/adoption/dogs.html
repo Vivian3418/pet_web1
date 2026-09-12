@@ -1,0 +1,325 @@
+{#
+  领养狗狗搜索页模板（中英双语）。
+
+  提供关键词、品种、性别、体型、年龄段、城市、救助站与状态筛选，
+  支持开启浏览器定位后按「附近救助站」距离排序，并可直达领养申请表。
+
+  模板变量：
+  * ``pagination``: 分页结果（含 records、total、pages 等）。
+  * ``shelters``: 附近救助站列表，附在养数量与距离。
+  * ``filters``: 当前生效的筛选条件（值为中文规范值，展示时翻译）。
+  * ``filter_options``: 受控词表选项（breeds / cities / sizes / genders / age_groups / sorts）。
+  * ``status_options``: 领养状态选项（中文规范值）。
+  * ``sort_options``: 排序选项 ``(值, msgid)`` 列表。
+  * ``origin``: 用户当前位置 ``(纬度, 经度)``，未定位时为 None。
+  * ``sort``: 当前排序方式。
+  * ``base_params``: 生成分页链接用的基础查询参数（不含 page）。
+  * ``location_params``: 仅包含 lat / lng 的查询参数，用于保留定位状态。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><span>{{ _('领养宠物') }}</span></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <div class="row align-items-end gy-3">
+            <div class="col-lg-8">
+                <h1 class="page-hero__title">{{ page_title }}</h1>
+                <p class="page-hero__desc">{{ page_desc }}</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <p class="result-count">
+                    {{ _('共找到') }} <strong>{{ pagination.total }}</strong> {{ _('只狗狗') }}
+                </p>
+                {% if origin %}
+                    <p class="geo-note geo-note--on">
+                        <span class="geo-note__dot" aria-hidden="true"></span>
+                        {{ _('已按距你最近排序') }}
+                    </p>
+                {% else %}
+                    <p class="geo-note">
+                        <span class="geo-note__dot" aria-hidden="true"></span>
+                        {{ _('未开启定位，正在按最新发布排序') }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        {# ---------------------------- 搜索面板 ---------------------------- #}
+        <form class="search-panel" method="get" action="{{ url_for('adoption.dogs') }}">
+            {% if origin %}
+                <input type="hidden" name="lat" value="{{ location_params.lat }}">
+                <input type="hidden" name="lng" value="{{ location_params.lng }}">
+            {% endif %}
+
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-lg-4">
+                    <label class="form-label form-label--sm" for="filter-q">{{ _('关键词') }}</label>
+                    <input class="form-control" type="search" id="filter-q" name="q"
+                           value="{{ filters.keyword }}"
+                           placeholder="{{ _('搜索名字、品种、性格或救助站') }}">
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="form-label form-label--sm" for="filter-city">{{ _('城市') }}</label>
+                    <select class="form-select" id="filter-city" name="city">
+                        <option value="">{{ _('全部城市') }}</option>
+                        {% for city in filter_options.cities %}
+                            <option value="{{ city }}" {{ 'selected' if filters.city == city }}>{{ _(city) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="form-label form-label--sm" for="filter-breed">{{ _('品种') }}</label>
+                    <select class="form-select" id="filter-breed" name="breed">
+                        <option value="">{{ _('全部品种') }}</option>
+                        {% for breed in filter_options.breeds %}
+                            <option value="{{ breed }}" {{ 'selected' if filters.breed == breed }}>{{ _(breed) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="form-label form-label--sm" for="filter-size">{{ _('体型') }}</label>
+                    <select class="form-select" id="filter-size" name="size">
+                        <option value="">{{ _('全部体型') }}</option>
+                        {% for size in filter_options.sizes %}
+                            <option value="{{ size }}" {{ 'selected' if filters.size == size }}>{{ _(size) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="form-label form-label--sm" for="filter-gender">{{ _('性别') }}</label>
+                    <select class="form-select" id="filter-gender" name="gender">
+                        <option value="">{{ _('不限') }}</option>
+                        {% for gender in filter_options.genders %}
+                            <option value="{{ gender }}" {{ 'selected' if filters.gender == gender }}>{{ _(gender) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-6 col-lg-2">
+                    <label class="form-label form-label--sm" for="filter-age">{{ _('年龄') }}</label>
+                    <select class="form-select" id="filter-age" name="age">
+                        <option value="">{{ _('全部年龄') }}</option>
+                        {% for value, label in filter_options.age_groups %}
+                            <option value="{{ value }}" {{ 'selected' if filters.age_group == value }}>{{ _(label) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="form-label form-label--sm" for="filter-status">{{ _('状态') }}</label>
+                    <select class="form-select" id="filter-status" name="status">
+                        <option value="">{{ _('全部状态') }}</option>
+                        {% for status in status_options %}
+                            <option value="{{ status }}" {{ 'selected' if filters.status == status }}>{{ _(status) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <label class="form-label form-label--sm" for="filter-sort">{{ _('排序') }}</label>
+                    <select class="form-select" id="filter-sort" name="sort">
+                        {% for value, label in sort_options %}
+                            <option value="{{ value }}" {{ 'selected' if sort == value }}>{{ _(label) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="search-panel__actions">
+                        <button class="btn btn-primary" type="submit">{{ _('搜索狗狗') }}</button>
+                        <a class="btn btn-outline-secondary" href="{{ url_for('adoption.dogs') }}">{{ _('重置条件') }}</a>
+                        <button class="btn btn-outline-primary" type="button" id="use-location-btn">
+                            {{ _('使用我的位置') }}
+                        </button>
+                    </div>
+                    <p class="search-panel__hint" id="geo-status" role="status">
+                        {% if origin %}
+                            {{ _('当前已按你的位置计算救助站距离，可随时重新定位或选择城市。') }}
+                        {% else %}
+                            {{ _('开启定位后，将优先显示离你最近的救助站狗狗。') }}
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </form>
+
+        <div class="row g-4 mt-1">
+            {# -------------------------- 附近救助站 -------------------------- #}
+            <aside class="col-lg-3">
+                <div class="shelter-panel">
+                    <div class="shelter-panel__head">
+                        <h2 class="shelter-panel__title">{{ _('附近救助站') }}</h2>
+                        {% if filters.shelter_id %}
+                            <a class="shelter-panel__reset"
+                               href="{{ url_for('adoption.dogs', **location_params) }}">{{ _('查看全部') }}</a>
+                        {% endif %}
+                    </div>
+                    <ul class="shelter-list">
+                        {% for shelter in shelters %}
+                            <li>
+                                <a class="shelter-card{{ ' is-active' if filters.shelter_id == shelter.id }}"
+                                   href="{{ url_for('adoption.dogs', shelter=shelter.id, **location_params) }}">
+                                    <span class="shelter-card__top">
+                                        <span class="shelter-card__name">{{ shelter.name }}</span>
+                                        {% if shelter.distance_km is not none %}
+                                            <span class="shelter-card__distance">{{ shelter.distance_km }} km</span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="shelter-card__meta">
+                                        {{ _(shelter.city) }}{{ _(shelter.district) }} · {{ _('在养 %(n)s 只', n=shelter.dog_count) }}
+                                    </span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="shelter-list__empty">{{ _('当前条件下没有可选的救助站。') }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </aside>
+
+            {# ----------------------------- 结果 ----------------------------- #}
+            <div class="col-lg-9">
+                <div class="result-toolbar">
+                    <p class="result-toolbar__text">
+                        {{ _('第 %(page)s / %(pages)s 页，共 %(total)s 条结果', page=pagination.page, pages=pagination.pages, total=pagination.total) }}
+                    </p>
+                    {% if filters.shelter_id or filters.city or filters.breed or filters.size or filters.gender or filters.age_group or filters.keyword %}
+                        <div class="active-filters">
+                            {% if filters.keyword %}<span class="chip">{{ _('关键词：%(value)s', value=filters.keyword) }}</span>{% endif %}
+                            {% if filters.city %}<span class="chip">{{ _(filters.city) }}</span>{% endif %}
+                            {% if filters.breed %}<span class="chip">{{ _(filters.breed) }}</span>{% endif %}
+                            {% if filters.size %}<span class="chip">{{ _(filters.size) }}</span>{% endif %}
+                            {% if filters.gender %}<span class="chip">{{ _(filters.gender) }}</span>{% endif %}
+                            {% if filters.age_group %}<span class="chip">{{ _('已选年龄段') }}</span>{% endif %}
+                            {% if filters.shelter_id %}<span class="chip">{{ _('已限定救助站') }}</span>{% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if pagination.records %}
+                    <div class="row g-4">
+                        {% for dog in pagination.records %}
+                            <div class="col-md-6 col-xl-4">
+                                <article class="dog-card">
+                                    <div class="dog-card__media">
+                                        <img class="dog-card__image"
+                                             src="{{ dog.image }}"
+                                             alt="{{ dog.name }}（{{ _(dog.breed) }}）"
+                                             loading="lazy"
+                                             onerror="this.onerror=null;this.src='https://placehold.co/800x600/EFF6FF/2563EB?text={{ dog.name }}';">
+                                        <span class="dog-card__status dog-card__status--{{ dog.status_slug }}">{{ _(dog.status) }}</span>
+                                        {% if dog.distance_km is not none %}
+                                            <span class="dog-card__distance">{{ _('距你 %(km)s km', km=dog.distance_km) }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="dog-card__body">
+                                        <h3 class="dog-card__name">{{ dog.name }}</h3>
+                                        <p class="dog-card__breed">{{ _(dog.breed) }}</p>
+                                        <ul class="dog-card__meta">
+                                            <li>{{ _(dog.gender) }}</li>
+                                            <li>{{ dog.age_text }}</li>
+                                            <li>{{ _(dog.size) }}</li>
+                                            <li>{{ dog.weight_kg }} kg</li>
+                                        </ul>
+                                        <ul class="dog-card__traits">
+                                            {% for trait in dog.traits[:3] %}
+                                                <li class="chip chip--sm">{{ _(trait) }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        <p class="dog-card__shelter">
+                                            {{ dog.shelter.name }} · {{ _(dog.city) }}
+                                        </p>
+                                        <div class="dog-card__actions">
+                                            <a class="btn btn-primary btn-sm"
+                                               href="{{ url_for('adoption.apply', dog_id=dog.id, **location_params) }}">
+                                                {{ _('我要领养') }}
+                                            </a>
+                                            <a class="btn btn-outline-primary btn-sm"
+                                               href="{{ url_for('adoption.dog_detail', dog_id=dog.id, **location_params) }}">
+                                                {{ _('查看详情') }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if pagination.pages > 1 %}
+                        <nav class="pager" aria-label="{{ _('搜索结果分页') }}">
+                            <a class="pager__item{{ ' is-disabled' if not pagination.has_prev }}"
+                               href="{{ url_for('adoption.dogs', page=pagination.prev_page, **base_params) if pagination.has_prev else '#' }}">
+                                {{ _('上一页') }}
+                            </a>
+                            {% for number in range(1, pagination.pages + 1) %}
+                                <a class="pager__item{{ ' is-active' if number == pagination.page }}"
+                                   href="{{ url_for('adoption.dogs', page=number, **base_params) }}">{{ number }}</a>
+                            {% endfor %}
+                            <a class="pager__item{{ ' is-disabled' if not pagination.has_next }}"
+                               href="{{ url_for('adoption.dogs', page=pagination.next_page, **base_params) if pagination.has_next else '#' }}">
+                                {{ _('下一页') }}
+                            </a>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state">
+                        <h2 class="empty-state__title">{{ _('没有找到符合条件的狗狗') }}</h2>
+                        <p class="empty-state__text">
+                            {{ _('试着放宽品种、体型或年龄条件，或者切换到其他城市的救助站看看。') }}
+                        </p>
+                        <a class="btn btn-primary" href="{{ url_for('adoption.dogs') }}">{{ _('查看全部待领养狗狗') }}</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    /* 渐进增强：浏览器定位用于「附近救助站」距离排序，失败时回退到手动选择城市。 */
+    (function () {
+        var button = document.getElementById('use-location-btn');
+        var status = document.getElementById('geo-status');
+        if (!button) {
+            return;
+        }
+        if (!navigator.geolocation) {
+            button.disabled = true;
+            if (status) {
+                status.textContent = '{{ _("当前浏览器不支持定位，请手动选择城市。") }}';
+            }
+            return;
+        }
+        button.addEventListener('click', function () {
+            if (status) {
+                status.textContent = '{{ _("正在获取你的位置…") }}';
+            }
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var url = new URL(window.location.href);
+                url.searchParams.set('lat', position.coords.latitude.toFixed(4));
+                url.searchParams.set('lng', position.coords.longitude.toFixed(4));
+                url.searchParams.set('sort', 'distance');
+                url.searchParams.delete('page');
+                window.location.href = url.toString();
+            }, function () {
+                if (status) {
+                    status.textContent = '{{ _("定位失败或未授权，请手动选择城市后重新搜索。") }}';
+                }
+            }, { timeout: 8000 });
+        });
+    })();
+</script>
+{% endblock %}

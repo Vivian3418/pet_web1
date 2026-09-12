@@ -1,0 +1,41 @@
+# 减小镜像构建上下文体积，仅保留构建所需文件
+.git
+.gitignore
+.github
+
+# 虚拟环境与缓存
+.venv
+venv
+__pycache__
+**/__pycache__
+*.py[cod]
+.pytest_cache
+.ruff_cache
+.mypy_cache
+
+# 打包产物
+build
+dist
+*.egg-info
+
+# 本地配置与工具目录
+.env
+.env.*
+.idea
+.vscode
+.DS_Store
+.codebuddy
+
+# 本地数据库与实例目录（容器内由数据卷提供）
+instance
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+
+# 翻译编译产物（容器内启动时按需编译）
+*.mo
+
+# 文档
+*.md
+!README.md

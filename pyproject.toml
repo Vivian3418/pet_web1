@@ -1,0 +1,74 @@
+# PEP 621 项目元数据配置
+# 依据 PEP 517 使用 hatchling 作为构建后端，采用 src-layout 布局。
+
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vv-pet01"
+version = "0.2.0"
+description = "vv_pet01 —— 以动物保护、宠物救助与宠物领养为核心的公益网站模拟系统"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Vivian3418" }]
+keywords = ["flask", "animal-protection", "pet-rescue", "pet-adoption", "charity"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Flask",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Chinese (Simplified)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+dependencies = [
+    "Flask>=3.0,<4.0",
+    "Flask-Babel>=4.0",
+    "Flask-WTF>=1.2",
+    # WTForms 的 Email() 校验器需要该可选依赖
+    "email-validator>=2.0",
+    "gunicorn>=21.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/Vivian3418/pet_web1"
+Repository = "https://github.com/Vivian3418/pet_web1.git"
+Issues = "https://github.com/Vivian3418/pet_web1/issues"
+
+# hatchling 在 src-layout 下需显式声明包所在目录
+[tool.hatch.build.targets.wheel]
+packages = ["src/vv_pet01"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/wsgi.py",
+    "/gunicorn.conf.py",
+    "/babel.cfg",
+    "/messages.pot",
+    "/README.md",
+    "/LICENSE",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "D"]
+ignore = ["D203", "D213"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

@@ -1,0 +1,104 @@
+{#
+  领养申请记录列表页模板（中英双语）。
+
+  用于查看本站已收到的全部申请，提供编号、申请人、申请动物、
+  联系方式与提交时间等信息，并可按分页浏览。
+
+  模板变量：
+  * ``pagination``: 分页结果（含 records、page、pages、total 等）。
+  * ``base_params``: 生成分页链接用的基础查询参数。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('adoption.dogs') }}">{{ _('领养狗狗') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+        <p class="result-count">
+            {{ _('共 %(total)s 条申请记录', total=pagination.total) }}
+        </p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        {% if pagination.records %}
+            <div class="table-responsive">
+                <table class="table records-table align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ _('申请编号') }}</th>
+                            <th scope="col">{{ _('申请人') }}</th>
+                            <th scope="col">{{ _('申请的动物') }}</th>
+                            <th scope="col">{{ _('联系方式') }}</th>
+                            <th scope="col">{{ _('提交时间') }}</th>
+                            <th scope="col">{{ _('状态') }}</th>
+                            <th scope="col" class="text-end">{{ _('操作') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in pagination.records %}
+                            <tr>
+                                <td class="records-table__ref">{{ application.reference }}</td>
+                                <td>{{ application.applicant_name }}</td>
+                                <td>{{ application.dog_display_name or _('待救助站推荐') }}</td>
+                                <td>
+                                    <span class="records-table__contact">{{ application.email }}</span>
+                                    {% if application.preferred_phone %}
+                                        <span class="records-table__contact">{{ application.preferred_phone }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ application.created_at_display }}</td>
+                                <td>
+                                    <span class="chip chip--status">{{ _(application.status_label) }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <a class="btn btn-outline-primary btn-sm"
+                                       href="{{ url_for('adoption.application_detail', application_id=application.id) }}">
+                                        {{ _('查看回执') }}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if pagination.pages > 1 %}
+                <nav class="pager" aria-label="{{ _('申请记录分页') }}">
+                    <a class="pager__item{{ ' is-disabled' if not pagination.has_prev }}"
+                       href="{{ url_for('adoption.applications', page=pagination.prev_page, **base_params) if pagination.has_prev else '#' }}">
+                        {{ _('上一页') }}
+                    </a>
+                    {% for number in range(1, pagination.pages + 1) %}
+                        <a class="pager__item{{ ' is-active' if number == pagination.page }}"
+                           href="{{ url_for('adoption.applications', page=number, **base_params) }}">{{ number }}</a>
+                    {% endfor %}
+                    <a class="pager__item{{ ' is-disabled' if not pagination.has_next }}"
+                       href="{{ url_for('adoption.applications', page=pagination.next_page, **base_params) if pagination.has_next else '#' }}">
+                        {{ _('下一页') }}
+                    </a>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <h2 class="empty-state__title">{{ _('还没有收到领养申请') }}</h2>
+                <p class="empty-state__text">
+                    {{ _('前往领养狗狗页面挑选一只狗狗并提交申请，记录会显示在这里。') }}
+                </p>
+                <a class="btn btn-primary" href="{{ url_for('adoption.dogs') }}">{{ _('去挑选狗狗') }}</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
