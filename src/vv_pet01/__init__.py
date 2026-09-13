@@ -21,7 +21,7 @@ from flask_wtf.csrf import CSRFProtect
 from vv_pet01 import db, i18n
 from vv_pet01.blueprints import ALL_BLUEPRINTS
 from vv_pet01.config import get_config
-from vv_pet01.navigation import BLUEPRINT_LABELS, SITE_NAV
+from vv_pet01.navigation import BLUEPRINT_LABELS, SITE_NAV, active_endpoints_of
 
 __version__ = "0.2.0"
 
@@ -143,6 +143,7 @@ def _register_context_processors(app: Flask) -> None:
             {
                 **item,
                 "label": _(item["label"]),
+                "active_endpoints": active_endpoints_of(item),
                 "children": [
                     {**child, "label": _(child["label"])} for child in item["children"]
                 ],
@@ -188,4 +189,20 @@ def _register_error_handlers(app: Flask) -> None:
                 page_desc=_("服务器开小差了，请稍后再试。"),
             ),
             500,
+        )
+
+    @app.errorhandler(413)
+    def request_entity_too_large(error):  # noqa: ANN001, ANN202
+        """渲染上传文件过大的提示页。"""
+        limit_mb = app.config.get("MAX_CONTENT_LENGTH", 0) // (1024 * 1024)
+        return (
+            render_template(
+                "page.html",
+                page_title=_("上传文件过大"),
+                page_desc=_(
+                    "上传的图片超过了 %(limit)s MB 的限制，请压缩后重新提交。",
+                    limit=limit_mb,
+                ),
+            ),
+            413,
         )

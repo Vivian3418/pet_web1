@@ -18,7 +18,7 @@
         <nav aria-label="{{ _('面包屑导航') }}">
             <ol class="breadcrumb page-breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
-                <li class="breadcrumb-item"><a href="{{ url_for('adoption.dogs') }}">{{ _('领养狗狗') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('adoption.pets') }}">{{ _('领养宠物') }}</a></li>
                 <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
             </ol>
         </nav>
@@ -39,7 +39,7 @@
                         <tr>
                             <th scope="col">{{ _('申请编号') }}</th>
                             <th scope="col">{{ _('申请人') }}</th>
-                            <th scope="col">{{ _('申请的动物') }}</th>
+                            <th scope="col">{{ _('申请的宠物') }}</th>
                             <th scope="col">{{ _('联系方式') }}</th>
                             <th scope="col">{{ _('提交时间') }}</th>
                             <th scope="col">{{ _('状态') }}</th>
@@ -51,7 +51,7 @@
                             <tr>
                                 <td class="records-table__ref">{{ application.reference }}</td>
                                 <td>{{ application.applicant_name }}</td>
-                                <td>{{ application.dog_display_name or _('待救助站推荐') }}</td>
+                                <td>{{ application.pet_display_name or _('待救助站推荐') }}</td>
                                 <td>
                                     <span class="records-table__contact">{{ application.email }}</span>
                                     {% if application.preferred_phone %}
@@ -94,9 +94,9 @@
             <div class="empty-state">
                 <h2 class="empty-state__title">{{ _('还没有收到领养申请') }}</h2>
                 <p class="empty-state__text">
-                    {{ _('前往领养狗狗页面挑选一只狗狗并提交申请，记录会显示在这里。') }}
+                    {{ _('前往领养宠物页面挑选一只宠物并提交申请，记录会显示在这里。') }}
                 </p>
-                <a class="btn btn-primary" href="{{ url_for('adoption.dogs') }}">{{ _('去挑选狗狗') }}</a>
+                <a class="btn btn-primary" href="{{ url_for('adoption.pets') }}">{{ _('去挑选宠物') }}</a>
             </div>
         {% endif %}
     </div>

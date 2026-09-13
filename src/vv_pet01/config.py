@@ -52,6 +52,9 @@ class BaseConfig:
     WTF_CSRF_ENABLED: bool = True
     WTF_CSRF_TIME_LIMIT: int | None = 60 * 60 * 4
 
+    # 上传限制：单次请求体上限，与动物救助照片大小上限保持一致（5 MB）
+    MAX_CONTENT_LENGTH: int = 5 * 1024 * 1024
+
     @staticmethod
     def init_app(app) -> None:
         """将配置应用到 Flask 应用实例的扩展点。

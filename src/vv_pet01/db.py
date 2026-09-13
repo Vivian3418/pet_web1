@@ -109,9 +109,9 @@ def is_seeded() -> bool:
     """判断数据库是否已写入种子数据。
 
     Returns:
-        当 ``dogs`` 表存在至少一条记录时返回 ``True``。
+        当 ``pets`` 表存在至少一条记录时返回 ``True``。
     """
-    row = get_db().execute("SELECT COUNT(*) AS total FROM dogs").fetchone()
+    row = get_db().execute("SELECT COUNT(*) AS total FROM pets").fetchone()
     return bool(row and row["total"])
 
 
@@ -119,18 +119,18 @@ def seed_db(force: bool = False) -> int:
     """把内置的救助站与狗狗数据写入数据库。
 
     Args:
-        force: 为 ``True`` 时先清空 ``shelters`` / ``dogs`` 再重新写入。
+        force: 为 ``True`` 时先清空 ``shelters`` / ``pets`` 再重新写入。
 
     Returns:
-        实际写入的狗狗记录条数。
+        实际写入的宠物记录条数。
     """
     from vv_pet01.data.seed import build_seed_rows
 
     connection = get_db()
-    shelters, dogs = build_seed_rows()
+    shelters, pets = build_seed_rows()
 
     if force:
-        connection.execute("DELETE FROM dogs")
+        connection.execute("DELETE FROM pets")
         connection.execute("DELETE FROM shelters")
 
     connection.executemany(
@@ -147,54 +147,28 @@ def seed_db(force: bool = False) -> int:
     )
     connection.executemany(
         """
-        INSERT OR REPLACE INTO dogs (
-            id, name, name_en, breed, gender, age_months, size, weight_kg,
-            shelter_id, status, vaccinated, neutered, traits, description,
-            description_en, image, story_image, intake_date
+        INSERT OR REPLACE INTO pets (
+            id, species, name, name_en, breed, gender, age_months, size,
+            weight_kg, shelter_id, status, vaccinated, neutered, traits,
+            companions, description, description_en, image, intake_date
         ) VALUES (
-            :id, :name, :name_en, :breed, :gender, :age_months, :size, :weight_kg,
-            :shelter_id, :status, :vaccinated, :neutered, :traits, :description,
-            :description_en, :image, :story_image, :intake_date
+            :id, :species, :name, :name_en, :breed, :gender, :age_months, :size,
+            :weight_kg, :shelter_id, :status, :vaccinated, :neutered, :traits,
+            :companions, :description, :description_en, :image, :intake_date
         )
         """,
-        dogs,
+        pets,
     )
     connection.commit()
-    return len(dogs)
-
-
-#: 轻量列迁移表：``表名 -> {列名: 建列语句}``。
-#:
-#: 用于让已存在的数据库补齐后续新增的列，避免演示环境必须删库重建。
-#: 仅做「缺列则加列」的幂等操作，不涉及数据转换，因此不引入迁移框架。
-_COLUMN_MIGRATIONS: dict[str, dict[str, str]] = {
-    "dogs": {
-        "story_image": "ALTER TABLE dogs ADD COLUMN story_image TEXT NOT NULL DEFAULT ''",
-    },
-}
-
-
-def _apply_column_migrations() -> None:
-    """为已存在的表补齐新增列（幂等）。"""
-    connection = get_db()
-    for table, columns in _COLUMN_MIGRATIONS.items():
-        existing = {
-            row["name"] for row in connection.execute(f"PRAGMA table_info({table})")
-        }
-        for column, statement in columns.items():
-            if column not in existing:
-                connection.execute(statement)
-                current_app.logger.info("数据库迁移：为 %s 表新增列 %s", table, column)
-    connection.commit()
+    return len(pets)
 
 
 def ensure_initialized() -> None:
-    """确保数据库可用：缺失时建表、补齐新增列，为空时写入种子数据。
+    """确保数据库可用：缺失时建表，为空时写入种子数据。
 
     该方法在应用工厂中调用一次，使演示站点无需手动初始化即可运行。
     """
     init_db()
-    _apply_column_migrations()
     if not is_seeded():
         seed_db()
 
@@ -228,4 +202,4 @@ def init_app(app: Flask) -> None:
         """写入或刷新演示用的种子数据。"""
         init_db()
         total = seed_db(force=True)
-        click.echo(f"已写入 {total} 条狗狗数据：{app.config['DATABASE']}")
+        click.echo(f"已写入 {total} 条宠物数据：{app.config['DATABASE']}")

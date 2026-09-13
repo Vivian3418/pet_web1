@@ -1,0 +1,200 @@
+{#
+  爱心捐款页面模板（参与公益 → 爱心捐款）。
+
+  支持一次性捐赠与每月定期捐赠；金额提供 5 个预设档位，也可选择「自定义金额」。
+  页面同时展示累计捐赠规模与最近捐赠记录，增强可信度。
+
+  模板变量：
+  * ``form``: ``DonationForm`` 实例。
+  * ``amounts``: 预设档位金额列表。
+  * ``frequency_options`` / ``designation_options``: 受控词表选项。
+  * ``summary``: 捐赠汇总（累计金额 / 每月定期金额 / 笔数 / 人数）。
+  * ``recent_donations``: 最近捐赠记录。
+#}
+{% extends "base.html" %}
+
+{% macro field_errors(field) %}
+    {% for error in field.errors %}
+        <div class="invalid-feedback d-block">{{ _(error) }}</div>
+    {% endfor %}
+{% endmacro %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><span>{{ _('参与公益') }}</span></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        {# 捐赠规模概览 #}
+        <div class="stat-row stat-row--summary">
+            <div class="stat-card">
+                <span class="stat-card__label">{{ _('累计捐赠金额（元）') }}</span>
+                <span class="stat-card__value">{{ summary.total_amount }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">{{ _('每月定期金额（元）') }}</span>
+                <span class="stat-card__value">{{ summary.monthly_amount }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">{{ _('捐赠笔数') }}</span>
+                <span class="stat-card__value">{{ summary.count }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">{{ _('爱心捐赠人') }}</span>
+                <span class="stat-card__value">{{ summary.donor_count }}</span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <form class="apply-form" method="post" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <fieldset class="apply-section">
+                        <legend class="apply-section__legend">{{ _('一、选择捐赠方式') }}</legend>
+                        <div class="option-row option-row--cards">
+                            {% for option in form.frequency %}
+                                <label class="choice-card" for="{{ option.id }}">
+                                    {{ option(class="form-check-input") }}
+                                    <span class="choice-card__body">
+                                        <span class="choice-card__title">
+                                            {% if option.data == 'monthly' %}
+                                                {{ _('每月定期捐赠') }}
+                                            {% else %}
+                                                {{ _('一次性捐赠') }}
+                                            {% endif %}
+                                        </span>
+                                        <span class="choice-card__hint">
+                                            {% if option.data == 'monthly' %}
+                                                {{ _('每月自动扣款一次，可随时取消。') }}
+                                            {% else %}
+                                                {{ _('本次捐赠一次性完成。') }}
+                                            {% endif %}
+                                        </span>
+                                    </span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        {{ field_errors(form.frequency) }}
+                    </fieldset>
+
+                    <fieldset class="apply-section">
+                        <legend class="apply-section__legend">{{ _('二、选择捐赠金额') }}</legend>
+                        <div class="amount-grid">
+                            {% for option in form.amount_choice %}
+                                <label class="amount-card" for="{{ option.id }}">
+                                    {{ option(class="form-check-input") }}
+                                    <span class="amount-card__value">{{ _(option.label.text) }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        {{ field_errors(form.amount_choice) }}
+
+                        <div class="apply-field apply-field--custom-amount">
+                            <label class="form-label form-label--sm" for="{{ form.custom_amount.id }}">
+                                {{ _(form.custom_amount.label.text) }}
+                            </label>
+                            {{ form.custom_amount(class="form-control" + (" is-invalid" if form.custom_amount.errors else ""), inputmode='decimal') }}
+                            {{ field_errors(form.custom_amount) }}
+                            <p class="form-hint">{{ _('选择「自定义金额」时以此处填写的金额为准。') }}</p>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="apply-section">
+                        <legend class="apply-section__legend">{{ _('三、捐赠人信息') }}</legend>
+                        <div class="row g-3">
+                            <div class="col-md-6 apply-field">
+                                <label class="form-label form-label--sm" for="{{ form.donor_name.id }}">
+                                    {{ _(form.donor_name.label.text) }}
+                                </label>
+                                {{ form.donor_name(class="form-control") }}
+                                {{ field_errors(form.donor_name) }}
+                            </div>
+                            <div class="col-md-6 apply-field">
+                                <label class="form-label form-label--sm" for="{{ form.email.id }}">
+                                    {{ _(form.email.label.text) }} <span class="req">*</span>
+                                </label>
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder='name@example.com') }}
+                                {{ field_errors(form.email) }}
+                            </div>
+                        </div>
+
+                        <div class="apply-field">
+                            <label class="form-label form-label--sm" for="{{ form.designation.id }}">
+                                {{ _(form.designation.label.text) }}
+                            </label>
+                            {{ form.designation(class="form-select") }}
+                            {{ field_errors(form.designation) }}
+                        </div>
+
+                        <div class="apply-field">
+                            <label class="form-label form-label--sm" for="{{ form.message.id }}">
+                                {{ _(form.message.label.text) }}
+                            </label>
+                            {{ form.message(class="form-control") }}
+                            {{ field_errors(form.message) }}
+                        </div>
+
+                        <div class="form-check apply-confirm">
+                            {{ form.anonymous(class="form-check-input") }}
+                            <label class="form-check-label" for="{{ form.anonymous.id }}">
+                                {{ _(form.anonymous.label.text) }}
+                            </label>
+                        </div>
+
+                        <p class="apply-source">
+                            {{ _('演示站点不接入真实支付渠道，提交后仅生成捐赠意向记录。') }}
+                        </p>
+
+                        <div class="apply-actions">
+                            <button class="btn btn-primary btn-lg" type="submit">{{ _('确认捐赠') }}</button>
+                            <a class="btn btn-outline-secondary btn-lg"
+                               href="{{ url_for('charity.donations') }}">{{ _('查看捐赠记录') }}</a>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="side-panel">
+                    <h2 class="side-panel__title">{{ _('捐款去向') }}</h2>
+                    <ul class="bullet-list">
+                        <li>{{ _('动物救助行动：受伤与被困动物的现场救助与运输。') }}</li>
+                        <li>{{ _('医疗与绝育：疫苗、驱虫、绝育手术与术后护理。') }}</li>
+                        <li>{{ _('粮食与日常物资：犬猫粮、猫砂、清洁与保暖用品。') }}</li>
+                        <li>{{ _('志愿者培训：安全培训、岗位培训与防护物资。') }}</li>
+                    </ul>
+
+                    {% if recent_donations %}
+                        <h2 class="side-panel__title side-panel__title--spaced">{{ _('最近捐赠') }}</h2>
+                        <ul class="donation-feed">
+                            {% for donation in recent_donations %}
+                                <li class="donation-feed__item">
+                                    <span class="donation-feed__name">{{ donation.display_name }}</span>
+                                    <span class="donation-feed__amount">{{ donation.amount_display }} {{ _('元') }}</span>
+                                    <span class="donation-feed__meta">
+                                        {{ _(donation.frequency_label) }} · {{ donation.created_at_display }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

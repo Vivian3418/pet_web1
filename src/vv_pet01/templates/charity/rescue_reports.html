@@ -1,0 +1,142 @@
+{#
+  救助工单列表模板（工作人员视图）。
+
+  展示全部救助上报记录与三种状态的统计，并提供「开始救助 / 标记救助成功」
+  按钮推进状态（POST 表单，带 CSRF 保护）。
+
+  模板变量：
+  * ``pagination``: 分页结果。
+  * ``counts``: 各状态工单数量。
+  * ``status_filter`` / ``status_options``: 当前状态过滤与可选项。
+  * ``base_params``: 分页链接参数。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('charity.rescue') }}">{{ _('动物救助') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        {# 状态统计，同时作为快捷过滤入口 #}
+        <div class="stat-row">
+            <a class="stat-card{{ ' is-active' if not status_filter }}"
+               href="{{ url_for('charity.rescue_reports') }}">
+                <span class="stat-card__label">{{ _('全部') }}</span>
+                <span class="stat-card__value">{{ pagination.total }}</span>
+            </a>
+            {% for status in status_options %}
+                <a class="stat-card stat-card--{{ loop.index }}{{ ' is-active' if status_filter == status }}"
+                   href="{{ url_for('charity.rescue_reports', status=status) }}">
+                    <span class="stat-card__label">{{ _(status) }}</span>
+                    <span class="stat-card__value">{{ counts.get(status, 0) }}</span>
+                </a>
+            {% endfor %}
+        </div>
+
+        {% if pagination.records %}
+            <div class="report-list">
+                {% for report in pagination.records %}
+                    <article class="report-card">
+                        <div class="report-card__media">
+                            {% if report.photo_path %}
+                                <img src="{{ url_for('charity.uploaded_photo', filename=report.photo_path.split('/')[-1]) }}"
+                                     alt="{{ _('现场照片') }}"
+                                     onerror="this.onerror=null;this.src='https://placehold.co/240x180/EFF6FF/2563EB?text=photo';">
+                            {% else %}
+                                <span class="report-card__placeholder">{{ _('未上传照片') }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="report-card__body">
+                            <div class="report-card__head">
+                                <span class="report-card__ref">{{ report.reference }}</span>
+                                <span class="rescue-status rescue-status--{{ report.status_slug }}">{{ _(report.status) }}</span>
+                            </div>
+                            <p class="report-card__meta">
+                                {{ _(report.animal_type) }} · {{ _(report.situation) }}{% if report.urgency %} · {{ _(report.urgency) }}{% endif %}
+                            </p>
+                            <p class="report-card__address">
+                                {{ report.address_text }}
+                                {% if report.nearest_shelter_name %}
+                                    · {{ _('最近救助站：%(name)s', name=report.nearest_shelter_name) }}
+                                {% endif %}
+                            </p>
+                            {% if report.description %}
+                                <p class="report-card__desc">{{ report.description }}</p>
+                            {% endif %}
+                            {% if report.handler_note %}
+                                <p class="report-card__note">{{ _('处理备注：%(note)s', note=report.handler_note) }}</p>
+                            {% endif %}
+                            <p class="report-card__time">{{ report.created_at_display }}</p>
+                        </div>
+                        <div class="report-card__actions">
+                            {% if report.can_advance %}
+                                <form method="post"
+                                      action="{{ url_for('charity.rescue_advance', report_id=report.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="page" value="{{ pagination.page }}">
+                                    <input type="hidden" name="status" value="{{ status_filter }}">
+                                    <input class="form-control form-control-sm report-card__note-input"
+                                           type="text" name="note"
+                                           placeholder="{{ _('处理备注（选填）') }}">
+                                    <button class="btn btn-primary btn-sm" type="submit">
+                                        {% if report.status == '未被救助' %}
+                                            {{ _('开始救助') }}
+                                        {% else %}
+                                            {{ _('标记救助成功') }}
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="report-card__done">{{ _('流程已完成') }}</span>
+                            {% endif %}
+                            <a class="btn btn-link btn-sm"
+                               href="{{ url_for('charity.rescue_detail', report_id=report.id) }}">
+                                {{ _('查看回执') }}
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            {% if pagination.pages > 1 %}
+                <nav class="pager" aria-label="{{ _('救助工单分页') }}">
+                    <a class="pager__item{{ ' is-disabled' if not pagination.has_prev }}"
+                       href="{{ url_for('charity.rescue_reports', page=pagination.prev_page, **base_params) if pagination.has_prev else '#' }}">
+                        {{ _('上一页') }}
+                    </a>
+                    {% for number in range(1, pagination.pages + 1) %}
+                        <a class="pager__item{{ ' is-active' if number == pagination.page }}"
+                           href="{{ url_for('charity.rescue_reports', page=number, **base_params) }}">{{ number }}</a>
+                    {% endfor %}
+                    <a class="pager__item{{ ' is-disabled' if not pagination.has_next }}"
+                       href="{{ url_for('charity.rescue_reports', page=pagination.next_page, **base_params) if pagination.has_next else '#' }}">
+                        {{ _('下一页') }}
+                    </a>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <h2 class="empty-state__title">{{ _('当前没有救助工单') }}</h2>
+                <p class="empty-state__text">
+                    {{ _('前往动物救助页面提交一条救助上报，记录会显示在这里。') }}
+                </p>
+                <a class="btn btn-primary" href="{{ url_for('charity.rescue') }}">{{ _('前往动物救助') }}</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

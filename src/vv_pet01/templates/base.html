@@ -31,6 +31,7 @@
           crossorigin="anonymous">
     <!-- 站点自定义样式 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block styles %}{% endblock %}
 </head>
 <body class="site-body">
 
@@ -77,7 +78,8 @@
             <div class="collapse navbar-collapse" id="primaryNavbar">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 site-nav">
                     {% for item in site_nav %}
-                        {% set is_active = request.blueprint == item.blueprint %}
+                        {# 含子菜单的项以子端点判定高亮；直达项以自身端点集合判定 #}
+                        {% set is_active = request.endpoint in item.active_endpoints %}
                         {% if item.children %}
                             {# 含二级子菜单：使用 Bootstrap 下拉组件 #}
                             <li class="nav-item dropdown site-nav__item">
@@ -161,18 +163,18 @@
             <div class="col-6 col-lg-3">
                 <p class="site-footer__title">{{ _('领养宠物') }}</p>
                 <ul class="site-footer__links">
-                    <li><a href="{{ url_for('adoption.dogs') }}">{{ _('领养狗狗') }}</a></li>
-                    <li><a href="{{ url_for('adoption.cats') }}">{{ _('领养猫咪') }}</a></li>
-                    <li><a href="{{ url_for('adoption.others') }}">{{ _('其他宠物') }}</a></li>
-                    <li><a href="{{ url_for('adoption.process') }}">{{ _('领养流程') }}</a></li>
+                    <li><a href="{{ url_for('adoption.pets') }}">{{ _('全部宠物') }}</a></li>
+                    <li><a href="{{ url_for('adoption.pets', species='狗') }}">{{ _('领养狗狗') }}</a></li>
+                    <li><a href="{{ url_for('adoption.pets', species='猫') }}">{{ _('领养猫咪') }}</a></li>
+                    <li><a href="{{ url_for('adoption.pets', species='其他宠物') }}">{{ _('其他宠物') }}</a></li>
                 </ul>
             </div>
             <div class="col-6 col-lg-4">
                 <p class="site-footer__title">{{ _('参与公益') }}</p>
                 <ul class="site-footer__links">
+                    <li><a href="{{ url_for('charity.rescue') }}">{{ _('动物救助') }}</a></li>
                     <li><a href="{{ url_for('charity.volunteer') }}">{{ _('成为志愿者') }}</a></li>
-                    <li><a href="{{ url_for('charity.donate') }}">{{ _('捐赠') }}</a></li>
-                    <li><a href="{{ url_for('charity.foster') }}">{{ _('寄养宠物') }}</a></li>
+                    <li><a href="{{ url_for('charity.donate') }}">{{ _('爱心捐款') }}</a></li>
                     <li><a href="{{ url_for('protection.welfare') }}">{{ _('动物福利') }}</a></li>
                 </ul>
             </div>

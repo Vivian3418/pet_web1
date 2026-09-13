@@ -1,0 +1,115 @@
+{#
+  捐赠记录列表模板。
+
+  展示捐赠汇总与全部捐赠记录（金额、周期、用途、时间），支持分页。
+
+  模板变量：
+  * ``pagination``: 分页结果。
+  * ``summary``: 捐赠汇总。
+  * ``base_params``: 分页链接参数。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('charity.donate') }}">{{ _('爱心捐款') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        <div class="stat-row stat-row--summary">
+            <div class="stat-card">
+                <span class="stat-card__label">{{ _('累计捐赠金额（元）') }}</span>
+                <span class="stat-card__value">{{ summary.total_amount }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">{{ _('每月定期金额（元）') }}</span>
+                <span class="stat-card__value">{{ summary.monthly_amount }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">{{ _('捐赠笔数') }}</span>
+                <span class="stat-card__value">{{ summary.count }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">{{ _('爱心捐赠人') }}</span>
+                <span class="stat-card__value">{{ summary.donor_count }}</span>
+            </div>
+        </div>
+
+        {% if pagination.records %}
+            <div class="table-responsive">
+                <table class="table records-table align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ _('捐赠编号') }}</th>
+                            <th scope="col">{{ _('捐赠人') }}</th>
+                            <th scope="col">{{ _('金额（元）') }}</th>
+                            <th scope="col">{{ _('捐赠方式') }}</th>
+                            <th scope="col">{{ _('捐赠用途') }}</th>
+                            <th scope="col">{{ _('提交时间') }}</th>
+                            <th scope="col" class="text-end">{{ _('操作') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donation in pagination.records %}
+                            <tr>
+                                <td class="records-table__ref">{{ donation.reference }}</td>
+                                <td>{{ donation.display_name }}</td>
+                                <td class="records-table__amount">{{ donation.amount_display }}</td>
+                                <td>
+                                    <span class="chip chip--sm">{{ _(donation.frequency_label) }}</span>
+                                </td>
+                                <td>{{ _(donation.designation) if donation.designation else _('不限用途（由救助站统一分配）') }}</td>
+                                <td>{{ donation.created_at_display }}</td>
+                                <td class="text-end">
+                                    <a class="btn btn-outline-primary btn-sm"
+                                       href="{{ url_for('charity.donation_detail', donation_id=donation.id) }}">
+                                        {{ _('查看回执') }}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if pagination.pages > 1 %}
+                <nav class="pager" aria-label="{{ _('捐赠记录分页') }}">
+                    <a class="pager__item{{ ' is-disabled' if not pagination.has_prev }}"
+                       href="{{ url_for('charity.donations', page=pagination.prev_page, **base_params) if pagination.has_prev else '#' }}">
+                        {{ _('上一页') }}
+                    </a>
+                    {% for number in range(1, pagination.pages + 1) %}
+                        <a class="pager__item{{ ' is-active' if number == pagination.page }}"
+                           href="{{ url_for('charity.donations', page=number, **base_params) }}">{{ number }}</a>
+                    {% endfor %}
+                    <a class="pager__item{{ ' is-disabled' if not pagination.has_next }}"
+                       href="{{ url_for('charity.donations', page=pagination.next_page, **base_params) if pagination.has_next else '#' }}">
+                        {{ _('下一页') }}
+                    </a>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <h2 class="empty-state__title">{{ _('还没有收到捐赠') }}</h2>
+                <p class="empty-state__text">
+                    {{ _('成为第一个支持我们的人，捐赠记录会显示在这里。') }}
+                </p>
+                <a class="btn btn-primary" href="{{ url_for('charity.donate') }}">{{ _('我要捐赠') }}</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

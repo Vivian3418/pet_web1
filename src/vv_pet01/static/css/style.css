@@ -950,6 +950,89 @@ a:hover {
     color: var(--color-text-muted);
 }
 
+/* ------------------------------ 检索分步面板 ------------------------------ */
+.search-step {
+    padding-bottom: 1.3rem;
+    margin-bottom: 1.3rem;
+    border-bottom: 1px dashed var(--color-border);
+}
+
+.search-step--toolbar {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.search-step--dynamic.is-hidden,
+.is-hidden {
+    display: none !important;
+}
+
+.search-step__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .55rem;
+    margin: 0 0 .9rem;
+}
+
+.search-step__no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--color-text-inverse);
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+    border-radius: 50%;
+}
+
+.search-step__title {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.search-step__hint {
+    font-size: .78rem;
+    color: var(--color-text-muted);
+}
+
+.search-cleared {
+    margin: 0;
+    padding: .55rem .8rem;
+    font-size: .82rem;
+    line-height: 1.7;
+    color: #B45309;
+    background: rgba(245, 158, 11, .12);
+    border-left: 3px solid var(--color-warning);
+    border-radius: var(--radius-sm);
+}
+
+.search-cleared--quiet {
+    color: var(--color-text-muted);
+    background: var(--color-bg-mist);
+    border-left-color: var(--color-primary-light);
+}
+
+/* 多选下拉：保留原生控件以保证无 JS 时可用，仅调整高度与样式 */
+.form-select--multi {
+    padding: .35rem .5rem;
+    min-height: 6.5rem;
+}
+
+.form-select--multi option {
+    padding: .2rem .35rem;
+    font-size: .88rem;
+}
+
+.form-select:disabled {
+    background-color: var(--color-bg-soft);
+    color: var(--color-text-muted);
+}
+
 /* ------------------------------ 结果工具条 ------------------------------ */
 .result-toolbar {
     display: flex;
@@ -994,6 +1077,12 @@ a:hover {
 .chip--sm {
     font-size: .72rem;
     padding: .15rem .55rem;
+}
+
+.chip--companion {
+    color: var(--color-success);
+    background: rgba(22, 163, 74, .1);
+    border-color: rgba(22, 163, 74, .2);
 }
 
 /* ------------------------------ 狗狗卡片 ------------------------------ */
@@ -1056,6 +1145,18 @@ a:hover {
 
 .dog-card__status--adopted {
     background: rgba(75, 85, 99, .75);
+}
+
+.dog-card__species {
+    position: absolute;
+    top: .7rem;
+    right: .7rem;
+    padding: .2rem .6rem;
+    font-size: .74rem;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+    background: rgba(255, 255, 255, .92);
+    border-radius: var(--radius-pill);
 }
 
 .dog-card__distance {
@@ -1686,6 +1787,695 @@ a:hover {
     border-color: rgba(22, 163, 74, .18);
 }
 
+/* ==========================================================================
+   参与公益：动物救助、成为志愿者、爱心捐款
+   ========================================================================== */
+
+/* ------------------------------ 通用区块标题 ------------------------------ */
+.block-title {
+    margin: 3rem 0 1.2rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.block-title:first-child {
+    margin-top: 0;
+}
+
+.section__desc--left {
+    max-width: 46rem;
+    margin: 1rem 0 0;
+    text-align: left;
+    font-size: .88rem;
+    color: var(--color-text-muted);
+}
+
+.bullet-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: .9rem;
+    line-height: 2;
+    color: var(--color-text-muted);
+}
+
+.bullet-list--ordered {
+    list-style: decimal;
+}
+
+/* ------------------------------ 可救助情形 ------------------------------ */
+.reason-grid,
+.task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: .7rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reason-card,
+.task-card {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .8rem 1rem;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.reason-card:hover,
+.task-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, .35);
+}
+
+.reason-card__dot,
+.task-card__dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .14);
+}
+
+.reason-card__text,
+.task-card__text {
+    font-size: .9rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+/* ------------------------------ 救助方式卡片 ------------------------------ */
+.method-card {
+    height: 100%;
+    padding: 1.5rem 1.4rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.method-card--accent {
+    background: linear-gradient(180deg, var(--color-bg-mist) 0%, var(--color-bg) 100%);
+    border-color: rgba(37, 99, 235, .3);
+}
+
+.method-card__no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-bottom: .8rem;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--color-text-inverse);
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+    border-radius: 50%;
+}
+
+.method-card__title {
+    margin: 0 0 .6rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.method-card__text {
+    margin: 0;
+    font-size: .88rem;
+    line-height: 1.85;
+    color: var(--color-text-muted);
+}
+
+/* ------------------------------ 地图与最近救助站 ------------------------------ */
+.map-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 1.2rem;
+    margin-top: 1.2rem;
+}
+
+.map-panel__map {
+    min-height: 380px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.map-panel__list {
+    display: grid;
+    gap: .6rem;
+    align-content: start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.map-target {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+    padding: .8rem .9rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.map-target__pin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    font-size: .76rem;
+    font-weight: 700;
+    color: var(--color-text-inverse);
+    background: var(--color-primary);
+    border-radius: 50%;
+}
+
+.map-target__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: .15rem;
+    min-width: 0;
+}
+
+.map-target__name {
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.map-target__address,
+.map-target__phone {
+    font-size: .78rem;
+    color: var(--color-text-muted);
+}
+
+.map-target__distance {
+    flex-shrink: 0;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+/* Leaflet 自定义标记（用 divIcon 绘制，避免额外图片资源） */
+.map-marker--me span {
+    display: block;
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary-dark);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .28);
+}
+
+.map-marker--shelter span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--color-text-inverse);
+    background: var(--color-success);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+}
+
+.map-marker--distance span {
+    display: inline-block;
+    padding: .1rem .4rem;
+    font-size: .68rem;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+    background: rgba(255, 255, 255, .94);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+}
+
+/* ------------------------------ 救助进度 ------------------------------ */
+.status-flow {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.status-flow__step {
+    position: relative;
+    padding: 1.2rem 1.2rem 1.2rem 1.4rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.status-flow__step--1 {
+    border-left-color: var(--color-warning);
+}
+
+.status-flow__step--2 {
+    border-left-color: var(--color-primary);
+}
+
+.status-flow__step--3 {
+    border-left-color: var(--color-success);
+}
+
+.status-flow__label {
+    display: block;
+    margin-bottom: .4rem;
+    font-size: .95rem;
+    font-weight: 600;
+}
+
+.status-flow__text {
+    font-size: .84rem;
+    line-height: 1.8;
+    color: var(--color-text-muted);
+}
+
+/* ------------------------------ 状态徽标 ------------------------------ */
+.rescue-status {
+    padding: .22rem .7rem;
+    font-size: .78rem;
+    font-weight: 600;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+}
+
+.rescue-status--pending {
+    color: #B45309;
+    background: rgba(245, 158, 11, .16);
+}
+
+.rescue-status--progress {
+    color: var(--color-primary-dark);
+    background: rgba(37, 99, 235, .14);
+}
+
+.rescue-status--rescued {
+    color: var(--color-success);
+    background: rgba(22, 163, 74, .14);
+}
+
+/* ------------------------------ 统计卡片 ------------------------------ */
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .8rem;
+    margin-bottom: 1.6rem;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    padding: .9rem 1rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+a.stat-card:hover {
+    border-color: rgba(37, 99, 235, .35);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card.is-active {
+    border-color: var(--color-primary);
+    background: var(--color-bg-mist);
+}
+
+.stat-card__label {
+    font-size: .78rem;
+    color: var(--color-text-muted);
+}
+
+.stat-card__value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+}
+
+.stat-card--1 .stat-card__value {
+    color: #B45309;
+}
+
+.stat-card--2 .stat-card__value {
+    color: var(--color-primary);
+}
+
+.stat-card--3 .stat-card__value {
+    color: var(--color-success);
+}
+
+/* ------------------------------ 救助工单列表 ------------------------------ */
+.report-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.report-card {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr) 220px;
+    gap: 1.1rem;
+    padding: 1rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.report-card__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    min-height: 132px;
+    background: var(--color-bg-mist);
+    border-radius: var(--radius-md);
+}
+
+.report-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.report-card__placeholder {
+    font-size: .8rem;
+    color: var(--color-text-muted);
+}
+
+.report-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem;
+    margin-bottom: .5rem;
+}
+
+.report-card__ref {
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+}
+
+.report-card__meta {
+    margin: 0 0 .35rem;
+    font-size: .85rem;
+    color: var(--color-text);
+}
+
+.report-card__address,
+.report-card__time {
+    margin: 0 0 .3rem;
+    font-size: .8rem;
+    color: var(--color-text-muted);
+}
+
+.report-card__desc {
+    margin: 0 0 .3rem;
+    font-size: .85rem;
+    line-height: 1.75;
+    color: var(--color-text-muted);
+}
+
+.report-card__note {
+    margin: 0 0 .3rem;
+    padding: .4rem .6rem;
+    font-size: .8rem;
+    color: #B45309;
+    background: rgba(245, 158, 11, .12);
+    border-radius: var(--radius-sm);
+}
+
+.report-card__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: .5rem;
+    justify-content: center;
+}
+
+.report-card__note-input {
+    margin-bottom: .4rem;
+}
+
+.report-card__done {
+    text-align: center;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--color-success);
+}
+
+/* ------------------------------ 捐赠档位与方式 ------------------------------ */
+.amount-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+    gap: .7rem;
+}
+
+.amount-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    padding: 1rem .8rem;
+    cursor: pointer;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.amount-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, .35);
+}
+
+.amount-card:has(.form-check-input:checked) {
+    border-color: var(--color-primary);
+    background: var(--color-bg-mist);
+    box-shadow: var(--shadow-sm);
+}
+
+.amount-card__value {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.option-row--cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: .8rem;
+}
+
+.choice-card {
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    padding: 1rem;
+    cursor: pointer;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.choice-card:has(.form-check-input:checked) {
+    border-color: var(--color-primary);
+    background: var(--color-bg-mist);
+}
+
+.choice-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+}
+
+.choice-card__title {
+    font-size: .95rem;
+    font-weight: 600;
+}
+
+.choice-card__hint {
+    font-size: .8rem;
+    color: var(--color-text-muted);
+}
+
+.apply-field--custom-amount {
+    margin-top: 1.1rem;
+}
+
+/* ------------------------------ 侧栏与捐赠动态 ------------------------------ */
+.side-panel {
+    height: 100%;
+    padding: 1.5rem 1.4rem;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.side-panel__title {
+    margin: 0 0 .9rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.side-panel__title--spaced {
+    margin-top: 1.8rem;
+}
+
+.donation-feed {
+    display: grid;
+    gap: .6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.donation-feed__item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .2rem .6rem;
+    padding: .6rem .7rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.donation-feed__name {
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.donation-feed__amount {
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.donation-feed__meta {
+    grid-column: 1 / -1;
+    font-size: .74rem;
+    color: var(--color-text-muted);
+}
+
+/* ------------------------------ 回执页补充 ------------------------------ */
+.receipt__text {
+    margin: 0;
+    font-size: .9rem;
+    line-height: 1.85;
+    color: var(--color-text-muted);
+}
+
+.receipt__photo {
+    display: block;
+    width: 100%;
+    max-width: 32rem;
+    margin-top: .4rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.receipt__steps li.is-current {
+    font-weight: 600;
+    color: var(--color-primary-dark);
+}
+
+.tier-flow {
+    margin: 0;
+}
+
+.donation-amount {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .35rem;
+    margin: 0 0 1.4rem;
+}
+
+.donation-amount__value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-primary-dark);
+}
+
+.donation-amount__unit {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+}
+
+.donation-amount__frequency {
+    margin-left: .6rem;
+    padding: .2rem .7rem;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--color-success);
+    background: rgba(22, 163, 74, .12);
+    border-radius: var(--radius-pill);
+}
+
+.records-table__amount {
+    font-weight: 700;
+    color: var(--color-primary-dark);
+}
+
+/* ------------------------------ 上传预览与补充样式 ------------------------------ */
+.upload-preview {
+    margin-top: .7rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.upload-preview img {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+}
+
+.chip--link {
+    text-decoration: none;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.chip--link:hover {
+    color: var(--color-text-inverse);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.empty-state--inline {
+    padding: 1.6rem 1.2rem;
+    margin-top: 1.2rem;
+}
+
+.search-panel__actions--compact {
+    margin-top: .6rem;
+}
+
 /* ------------------------------ 响应式微调 ------------------------------ */
 @media (max-width: 991.98px) {
     .site-nav__link.is-active::after {
@@ -1812,5 +2602,62 @@ a:hover {
 
     .story-card {
         flex-basis: min(78vw, 280px);
+    }
+}
+
+/* ------------------------------ 参与公益响应式补充 ------------------------------ */
+@media (max-width: 991.98px) {
+    .map-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .map-panel__map {
+        min-height: 300px;
+    }
+
+    .status-flow {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .report-card {
+        grid-template-columns: 1fr;
+    }
+
+    .report-card__media {
+        min-height: 180px;
+    }
+
+    .report-card__actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .report-card__actions form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        align-items: center;
+    }
+
+    .report-card__note-input {
+        width: 12rem;
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .block-title {
+        font-size: 1.15rem;
+    }
+
+    .donation-amount__value {
+        font-size: 1.8rem;
+    }
+
+    .reason-grid,
+    .task-grid {
+        grid-template-columns: 1fr;
     }
 }

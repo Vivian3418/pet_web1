@@ -1,0 +1,121 @@
+{#
+  志愿者申请回执页模板。
+
+  展示申请编号、申请概要、技能与意向，以及后续流程说明。
+
+  模板变量：
+  * ``application``: 志愿者申请字典（含 status_label、skills、tasks、availability 等）。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--success">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('charity.volunteer') }}">{{ _('成为志愿者') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <span class="success-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+            </svg>
+        </span>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        <div class="receipt">
+            <div class="receipt__head">
+                <div>
+                    <p class="receipt__label">{{ _('申请编号') }}</p>
+                    <p class="receipt__reference">{{ application.reference }}</p>
+                </div>
+                <span class="receipt__status">{{ _(application.status_label) }}</span>
+            </div>
+
+            <dl class="detail-list receipt__list">
+                <div class="detail-list__row">
+                    <dt>{{ _('姓名') }}</dt>
+                    <dd>{{ application.full_name }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('电子邮箱') }}</dt>
+                    <dd>{{ application.email }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('联系电话') }}</dt>
+                    <dd>{{ application.phone or _('未填写') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('所在城市') }}</dt>
+                    <dd>{{ application.city or _('未填写') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('可投入的时间') }}</dt>
+                    <dd>{{ _(application.commitment) if application.commitment else _('未填写') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('可开始服务的日期') }}</dt>
+                    <dd>{{ application.start_availability or _('未填写') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('提交时间') }}</dt>
+                    <dd>{{ application.created_at_display }}</dd>
+                </div>
+            </dl>
+
+            {% if application.skills %}
+                <h2 class="receipt__title">{{ _('可提供的技能与专长') }}</h2>
+                <ul class="chip-list">
+                    {% for skill in application.skills %}
+                        <li class="chip">{{ _(skill) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if application.tasks %}
+                <h2 class="receipt__title">{{ _('希望参与的工作内容') }}</h2>
+                <ul class="chip-list">
+                    {% for task in application.tasks %}
+                        <li class="chip chip--companion">{{ _(task) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if application.availability %}
+                <h2 class="receipt__title">{{ _('可服务时段') }}</h2>
+                <ul class="chip-list">
+                    {% for slot in application.availability %}
+                        <li class="chip">{{ _(slot) }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <h2 class="receipt__title">{{ _('接下来的流程') }}</h2>
+            <ol class="receipt__steps">
+                <li>{{ _('志愿者协调员会在 5 个工作日内与你联系，安排一次面谈。') }}</li>
+                <li>{{ _('面谈后确认适合的岗位与排班，并邀请你参加入职导览。') }}</li>
+                <li>{{ _('完成安全培训并签署志愿者协议与免责声明。') }}</li>
+                <li>{{ _('按排班到岗服务，我们会在系统中记录你的服务时数。') }}</li>
+            </ol>
+
+            <div class="detail-actions">
+                <a class="btn btn-primary"
+                   href="{{ url_for('charity.rescue') }}">{{ _('前往动物救助') }}</a>
+                <a class="btn btn-outline-primary"
+                   href="{{ url_for('charity.donate') }}">{{ _('了解爱心捐款') }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

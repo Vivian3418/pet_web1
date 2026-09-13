@@ -1,0 +1,123 @@
+{#
+  救助工单回执页模板。
+
+  展示救助编号、上报内容、现场照片、位置与最近救助站，
+  并给出当前的救助进度说明。
+
+  模板变量：
+  * ``report``: 救助工单字典（含 status_slug、nearest_shelter_name 等派生字段）。
+  * ``is_pending`` / ``is_rescued``: 便捷状态判断。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--success">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('charity.rescue') }}">{{ _('动物救助') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <span class="success-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+            </svg>
+        </span>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        <div class="receipt">
+            <div class="receipt__head">
+                <div>
+                    <p class="receipt__label">{{ _('救助编号') }}</p>
+                    <p class="receipt__reference">{{ report.reference }}</p>
+                </div>
+                <span class="rescue-status rescue-status--{{ report.status_slug }}">{{ _(report.status) }}</span>
+            </div>
+
+            <dl class="detail-list receipt__list">
+                <div class="detail-list__row">
+                    <dt>{{ _('需要救助的动物') }}</dt>
+                    <dd>{{ _(report.animal_type) }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('动物目前的情况') }}</dt>
+                    <dd>{{ _(report.situation) }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('紧急程度') }}</dt>
+                    <dd>{{ _(report.urgency) if report.urgency else _('未填写') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('希望的救助方式') }}</dt>
+                    <dd>{{ _(report.handling) if report.handling else _('未填写') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('发现地点') }}</dt>
+                    <dd>{{ report.address_text }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('最近救助站') }}</dt>
+                    <dd>{{ report.nearest_shelter_name or _('待分配') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('上报时间') }}</dt>
+                    <dd>{{ report.created_at_display }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('最近更新') }}</dt>
+                    <dd>{{ report.updated_at_display }}</dd>
+                </div>
+            </dl>
+
+            {% if report.description %}
+                <h2 class="receipt__title">{{ _('情况补充描述') }}</h2>
+                <p class="receipt__text">{{ report.description }}</p>
+            {% endif %}
+
+            {% if report.photo_path %}
+                <h2 class="receipt__title">{{ _('现场照片') }}</h2>
+                <img class="receipt__photo"
+                     src="{{ url_for('charity.uploaded_photo', filename=report.photo_path.split('/')[-1]) }}"
+                     alt="{{ _('现场照片') }}"
+                     onerror="this.onerror=null;this.src='https://placehold.co/480x320/EFF6FF/2563EB?text=photo';">
+            {% endif %}
+
+            {% if report.handler_note %}
+                <h2 class="receipt__title">{{ _('处理备注') }}</h2>
+                <p class="receipt__text">{{ report.handler_note }}</p>
+            {% endif %}
+
+            <h2 class="receipt__title">{{ _('救助进度') }}</h2>
+            <ol class="receipt__steps">
+                <li class="{{ 'is-current' if is_pending }}">
+                    {{ _('未被救助：工单已提交，等待工作人员确认与分配。') }}
+                </li>
+                <li class="{{ 'is-current' if report.status == '正在救助中' }}">
+                    {{ _('正在救助中：工作人员已接单，正在前往现场或与上报人联系。') }}
+                </li>
+                <li class="{{ 'is-current' if is_rescued }}">
+                    {{ _('救助成功：动物已得到救助，并转入医疗观察或寻找领养。') }}
+                </li>
+            </ol>
+
+            <div class="detail-actions">
+                <a class="btn btn-primary"
+                   href="{{ url_for('charity.rescue_reports') }}">{{ _('查看救助进度') }}</a>
+                <a class="btn btn-outline-primary"
+                   href="{{ url_for('charity.rescue') }}">{{ _('再上报一条救助信息') }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

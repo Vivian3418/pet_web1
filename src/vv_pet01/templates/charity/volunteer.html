@@ -1,0 +1,276 @@
+{#
+  成为志愿者页面模板（参与公益 → 成为志愿者）。
+
+  上半部分介绍志愿者的工作内容、技能需求与参与流程；
+  下半部分为志愿者申请表（字段参考 Best Friends《Volunteer Engagement》指南）。
+
+  模板变量：
+  * ``form``: ``VolunteerApplicationForm`` 实例。
+  * ``task_options`` / ``skill_options`` / ``availability_options`` / ``commitment_options``: 受控词表选项。
+  * ``recent_applications``: 最近几条申请，用于展示志愿者规模。
+#}
+{% extends "base.html" %}
+
+{% macro field_errors(field) %}
+    {% for error in field.errors %}
+        <div class="invalid-feedback d-block">{{ _(error) }}</div>
+    {% endfor %}
+{% endmacro %}
+
+{% macro checkbox_group(field, columns='') %}
+    <div class="option-grid {{ columns }}">
+        {% for option in field %}
+            <div class="form-check">
+                {{ option(class="form-check-input") }}
+                <label class="form-check-label" for="{{ option.id }}">{{ _(option.label.text) }}</label>
+            </div>
+        {% endfor %}
+    </div>
+    {{ field_errors(field) }}
+{% endmacro %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><span>{{ _('参与公益') }}</span></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <div class="row align-items-end gy-3">
+            <div class="col-lg-8">
+                <h1 class="page-hero__title">{{ page_title }}</h1>
+                <p class="page-hero__desc">{{ page_desc }}</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <p class="result-count">
+                    {{ _('已有') }} <strong>{{ recent_applications | length }}</strong> {{ _('位伙伴提交了申请') }}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+
+        {# ---------------------- 工作内容介绍 ---------------------- #}
+        <h2 class="block-title">{{ _('志愿者主要做什么') }}</h2>
+        <ul class="task-grid">
+            {% for task in task_options %}
+                <li class="task-card">
+                    <span class="task-card__dot" aria-hidden="true"></span>
+                    <span class="task-card__text">{{ _(task) }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="row g-4 mt-1">
+            <div class="col-md-6">
+                <article class="method-card">
+                    <h3 class="method-card__title">{{ _('我们希望你有') }}</h3>
+                    <ul class="bullet-list">
+                        <li>{{ _('对动物的耐心与责任心，能按约定时间到岗。') }}</li>
+                        <li>{{ _('愿意学习救助站的安全规范与操作流程。') }}</li>
+                        <li>{{ _('能够与工作人员配合，如实记录动物状况。') }}</li>
+                    </ul>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <article class="method-card method-card--accent">
+                    <h3 class="method-card__title">{{ _('参与流程') }}</h3>
+                    <ol class="bullet-list bullet-list--ordered">
+                        <li>{{ _('提交志愿者申请表') }}</li>
+                        <li>{{ _('与志愿者协调员面谈，确认适合的岗位') }}</li>
+                        <li>{{ _('参加入职导览与安全培训，签署志愿者协议') }}</li>
+                        <li>{{ _('按岗位排班到岗，记录服务时数') }}</li>
+                    </ol>
+                </article>
+            </div>
+        </div>
+
+        {# ---------------------- 申请表 ---------------------- #}
+        <h2 class="block-title">{{ _('志愿者申请表') }}</h2>
+        <form class="apply-form" method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('一、基本信息') }}</legend>
+                <div class="row g-3">
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.full_name.id }}">
+                            {{ _(form.full_name.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else "")) }}
+                        {{ field_errors(form.full_name) }}
+                    </div>
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.email.id }}">
+                            {{ _(form.email.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder='name@example.com') }}
+                        {{ field_errors(form.email) }}
+                    </div>
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.phone.id }}">
+                            {{ _(form.phone.label.text) }}
+                        </label>
+                        {{ form.phone(class="form-control") }}
+                        {{ field_errors(form.phone) }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.city.id }}">
+                            {{ _(form.city.label.text) }}
+                        </label>
+                        {{ form.city(class="form-control") }}
+                        {{ field_errors(form.city) }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.occupation.id }}">
+                            {{ _(form.occupation.label.text) }}
+                        </label>
+                        {{ form.occupation(class="form-control") }}
+                        {{ field_errors(form.occupation) }}
+                    </div>
+                </div>
+
+                <div class="apply-field apply-field--check">
+                    <div class="form-check">
+                        {{ form.is_adult(class="form-check-input") }}
+                        <label class="form-check-label" for="{{ form.is_adult.id }}">
+                            {{ _(form.is_adult.label.text) }}
+                        </label>
+                    </div>
+                </div>
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.guardian_name.id }}">
+                        {{ _(form.guardian_name.label.text) }}
+                    </label>
+                    {{ form.guardian_name(class="form-control") }}
+                    {{ field_errors(form.guardian_name) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('二、技能与专长') }}</legend>
+                <p class="apply-section__hint">
+                    {{ _('请勾选你可以贡献的技能，并在下方补充资质或作品说明，便于我们安排合适的岗位。') }}
+                </p>
+                {{ checkbox_group(form.skills, 'option-grid--two') }}
+
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.skill_detail.id }}">
+                        {{ _(form.skill_detail.label.text) }}
+                    </label>
+                    {{ form.skill_detail(class="form-control") }}
+                    {{ field_errors(form.skill_detail) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('三、希望参与的工作与时间') }}</legend>
+                {{ checkbox_group(form.tasks, 'option-grid--two') }}
+
+                <div class="apply-field">
+                    <span class="form-label form-label--sm">{{ _(form.availability.label.text) }}</span>
+                    <div class="option-row">
+                        {% for option in form.availability %}
+                            <div class="form-check form-check-inline">
+                                {{ option(class="form-check-input") }}
+                                <label class="form-check-label" for="{{ option.id }}">{{ _(option.label.text) }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {{ field_errors(form.availability) }}
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.commitment.id }}">
+                            {{ _(form.commitment.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ form.commitment(class="form-select" + (" is-invalid" if form.commitment.errors else "")) }}
+                        {{ field_errors(form.commitment) }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.start_availability.id }}">
+                            {{ _(form.start_availability.label.text) }}
+                        </label>
+                        {{ form.start_availability(class="form-control", placeholder=_('例如：2026-10-01，或随时可以开始')) }}
+                        {{ field_errors(form.start_availability) }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('四、经历与意愿') }}</legend>
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.experience.id }}">
+                        {{ _(form.experience.label.text) }}
+                    </label>
+                    {{ form.experience(class="form-control") }}
+                    {{ field_errors(form.experience) }}
+                </div>
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.motivation.id }}">
+                        {{ _(form.motivation.label.text) }} <span class="req">*</span>
+                    </label>
+                    {{ form.motivation(class="form-control" + (" is-invalid" if form.motivation.errors else "")) }}
+                    {{ field_errors(form.motivation) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('五、健康与紧急联系') }}</legend>
+                <div class="apply-field apply-field--check">
+                    <div class="form-check">
+                        {{ form.physical_ok(class="form-check-input") }}
+                        <label class="form-check-label" for="{{ form.physical_ok.id }}">
+                            {{ _(form.physical_ok.label.text) }}
+                        </label>
+                    </div>
+                    <p class="form-hint">{{ _('涉及动物护理与体力工作时，救助站会提供安全指南与必要防护用品。') }}</p>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.emergency_name.id }}">
+                            {{ _(form.emergency_name.label.text) }}
+                        </label>
+                        {{ form.emergency_name(class="form-control") }}
+                        {{ field_errors(form.emergency_name) }}
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.emergency_phone.id }}">
+                            {{ _(form.emergency_phone.label.text) }}
+                        </label>
+                        {{ form.emergency_phone(class="form-control") }}
+                        {{ field_errors(form.emergency_phone) }}
+                    </div>
+                </div>
+
+                <div class="form-check apply-confirm">
+                    {{ form.accept_handbook(class="form-check-input" + (" is-invalid" if form.accept_handbook.errors else "")) }}
+                    <label class="form-check-label" for="{{ form.accept_handbook.id }}">
+                        {{ _(form.accept_handbook.label.text) }}
+                    </label>
+                </div>
+                {{ field_errors(form.accept_handbook) }}
+
+                <p class="apply-source">
+                    {{ _('本表参考 Best Friends Animal Society 的 Volunteer Engagement 指南设计。') }}
+                </p>
+
+                <div class="apply-actions">
+                    <button class="btn btn-primary btn-lg" type="submit">{{ _('提交志愿者申请') }}</button>
+                    <a class="btn btn-outline-secondary btn-lg"
+                       href="{{ url_for('charity.rescue') }}">{{ _('了解动物救助') }}</a>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -139,7 +139,7 @@
                         <h3 class="story-card__name">{{ dog.name }}</h3>
                         <p class="story-card__text">{{ dog.description }}</p>
                         <a class="story-card__link"
-                           href="{{ url_for('adoption.dog_detail', dog_id=dog.id) }}">
+                           href="{{ url_for('adoption.pet_detail', pet_id=dog.id) }}">
                             {{ _('查看详情') }} →
                         </a>
                     </div>

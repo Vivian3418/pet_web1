@@ -1,17 +1,17 @@
 {#
-  狗狗详情页模板（中英双语）。
+  宠物详情页模板（中英双语，狗 / 猫 / 其他宠物通用）。
 
-  展示单只狗狗的完整档案、性格标签与所属救助站信息，
-  并在已获得定位时展示「距你多远」。主行动按钮「我要领养」直接跳转领养申请表。
+  展示单只宠物的完整档案、相处对象、性格标签与所属救助站信息，
+  并在已获得参考点时展示距离。主行动按钮「我要领养」直接跳转领养申请表。
 
   模板变量：
-  * ``dog``: 已补充 shelter、age_text、distance_km 等派生字段的狗狗档案。
-  * ``origin``: 用户当前位置 ``(纬度, 经度)``，未定位时为 None。
-  * ``location_params``: 仅包含 lat / lng 的查询参数，用于保留定位状态。
+  * ``pet``: 已补充 shelter、age_text、companions、distance_km 等派生字段的宠物档案。
+  * ``origin``: 用户定位坐标，未定位时为 None。
+  * ``location_params``: 保留定位与距离状态的查询参数。
 #}
 {% extends "base.html" %}
 
-{% block title %}{{ dog.name }} · {{ _('领养狗狗') }}{% endblock %}
+{% block title %}{{ pet.name }} · {{ _('领养宠物') }}{% endblock %}
 
 {% block content %}
 <section class="page-hero">
@@ -19,17 +19,16 @@
         <nav aria-label="{{ _('面包屑导航') }}">
             <ol class="breadcrumb page-breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
-                <li class="breadcrumb-item"><span>{{ _('领养宠物') }}</span></li>
-                <li class="breadcrumb-item"><a href="{{ url_for('adoption.dogs', **location_params) }}">{{ _('领养狗狗') }}</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ dog.name }}</li>
+                <li class="breadcrumb-item"><a href="{{ url_for('adoption.pets', **location_params) }}">{{ _('领养宠物') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ pet.name }}</li>
             </ol>
         </nav>
         <h1 class="page-hero__title">
-            {{ dog.name }}
-            <span class="dog-status dog-status--{{ dog.status_slug }}">{{ _(dog.status) }}</span>
+            {{ pet.name }}
+            <span class="dog-status dog-status--{{ pet.status_slug }}">{{ _(pet.status) }}</span>
         </h1>
         <p class="page-hero__desc">
-            {{ _(dog.breed) }} · {{ _('来自 %(shelter)s', shelter=dog.shelter.name) }}
+            {{ _(pet.species) }} · {{ _(pet.breed) }} · {{ _('来自 %(shelter)s', shelter=pet.shelter.name) }}
         </p>
     </div>
 </section>
@@ -40,12 +39,12 @@
             <div class="col-lg-6">
                 <figure class="detail-media">
                     <img class="detail-media__image"
-                         src="{{ dog.image }}"
-                         alt="{{ dog.name }}（{{ _(dog.breed) }}）"
-                         onerror="this.onerror=null;this.src='https://placehold.co/800x600/EFF6FF/2563EB?text={{ dog.name }}';">
-                    {% if dog.distance_km is not none %}
+                         src="{{ pet.image }}"
+                         alt="{{ pet.name }}（{{ _(pet.breed) }}）"
+                         onerror="this.onerror=null;this.src='https://placehold.co/800x600/EFF6FF/2563EB?text={{ pet.name }}';">
+                    {% if pet.distance_km is not none %}
                         <figcaption class="detail-media__badge">
-                            {{ _('距你约 %(km)s km', km=dog.distance_km) }}
+                            {{ _('距你约 %(km)s km', km=pet.distance_km) }}
                         </figcaption>
                     {% endif %}
                 </figure>
@@ -56,54 +55,74 @@
                     <h2 class="detail-card__title">{{ _('基本信息') }}</h2>
                     <dl class="detail-list">
                         <div class="detail-list__row">
+                            <dt>{{ _('宠物类别') }}</dt>
+                            <dd>{{ _(pet.species) }}</dd>
+                        </div>
+                        <div class="detail-list__row">
                             <dt>{{ _('品种') }}</dt>
-                            <dd>{{ _(dog.breed) }}</dd>
+                            <dd>{{ _(pet.breed) }}</dd>
                         </div>
                         <div class="detail-list__row">
                             <dt>{{ _('性别') }}</dt>
-                            <dd>{{ _(dog.gender) }}</dd>
+                            <dd>{{ _(pet.gender) }}</dd>
                         </div>
                         <div class="detail-list__row">
                             <dt>{{ _('年龄') }}</dt>
-                            <dd>{{ dog.age_text }}</dd>
+                            <dd>{{ pet.age_text }}</dd>
                         </div>
                         <div class="detail-list__row">
-                            <dt>{{ _('体型 / 体重') }}</dt>
-                            <dd>{{ _(dog.size) }} · {{ dog.weight_kg }} kg</dd>
+                            <dt>{{ _('体重') }}</dt>
+                            <dd>{{ pet.weight_kg }} kg</dd>
                         </div>
+                        {# 体型仅对狗有意义，其余类别不展示该行 #}
+                        {% if pet.size %}
+                            <div class="detail-list__row">
+                                <dt>{{ _('体型') }}</dt>
+                                <dd>{{ _(pet.size) }}</dd>
+                            </div>
+                        {% endif %}
                         <div class="detail-list__row">
                             <dt>{{ _('疫苗') }}</dt>
-                            <dd>{{ _('已完成') if dog.vaccinated else _('待接种') }}</dd>
+                            <dd>{{ _('已完成') if pet.vaccinated else _('待接种') }}</dd>
                         </div>
                         <div class="detail-list__row">
                             <dt>{{ _('绝育') }}</dt>
-                            <dd>{{ _('已完成') if dog.neutered else _('待安排') }}</dd>
+                            <dd>{{ _('已完成') if pet.neutered else _('待安排') }}</dd>
                         </div>
                         <div class="detail-list__row">
                             <dt>{{ _('入站日期') }}</dt>
-                            <dd>{{ dog.intake_date }}</dd>
+                            <dd>{{ pet.intake_date }}</dd>
                         </div>
                     </dl>
 
+                    {% if pet.companions %}
+                        <h2 class="detail-card__title detail-card__title--spaced">{{ _('适合与哪些对象相处') }}</h2>
+                        <ul class="chip-list">
+                            {% for companion in pet.companions %}
+                                <li class="chip chip--companion">{{ _(companion) }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
                     <h2 class="detail-card__title detail-card__title--spaced">{{ _('性格标签') }}</h2>
                     <ul class="chip-list">
-                        {% for trait in dog.traits %}
+                        {% for trait in pet.traits %}
                             <li class="chip">{{ _(trait) }}</li>
                         {% endfor %}
                     </ul>
 
                     <h2 class="detail-card__title detail-card__title--spaced">{{ _('它的救助故事') }}</h2>
-                    <p class="detail-card__text">{{ dog.description }}</p>
+                    <p class="detail-card__text">{{ pet.description }}</p>
 
                     <div class="detail-actions">
                         <a class="btn btn-primary btn-lg"
-                           href="{{ url_for('adoption.apply', dog_id=dog.id, **location_params) }}">
+                           href="{{ url_for('adoption.apply', pet_id=pet.id, **location_params) }}">
                             {{ _('我要领养') }}
                         </a>
                         <a class="btn btn-outline-primary btn-lg"
                            href="{{ url_for('adoption.process') }}">{{ _('了解领养流程') }}</a>
                         <a class="btn btn-link btn-lg"
-                           href="{{ url_for('adoption.dogs', **location_params) }}">{{ _('返回搜索') }}</a>
+                           href="{{ url_for('adoption.pets', **location_params) }}">{{ _('返回搜索') }}</a>
                     </div>
                 </div>
             </div>
@@ -114,27 +133,27 @@
             <div class="shelter-detail__grid">
                 <div class="shelter-detail__item">
                     <span class="shelter-detail__label">{{ _('名称') }}</span>
-                    <span class="shelter-detail__value">{{ dog.shelter.name }}</span>
+                    <span class="shelter-detail__value">{{ pet.shelter.name }}</span>
                 </div>
                 <div class="shelter-detail__item">
                     <span class="shelter-detail__label">{{ _('城市') }}</span>
-                    <span class="shelter-detail__value">{{ _(dog.shelter.city) }}{{ _(dog.shelter.district) }}</span>
+                    <span class="shelter-detail__value">{{ _(pet.shelter.city) }}{{ _(pet.shelter.district) }}</span>
                 </div>
                 <div class="shelter-detail__item">
                     <span class="shelter-detail__label">{{ _('救助站电话') }}</span>
-                    <span class="shelter-detail__value">{{ dog.shelter.phone }}</span>
+                    <span class="shelter-detail__value">{{ pet.shelter.phone }}</span>
                 </div>
                 <div class="shelter-detail__item">
                     <span class="shelter-detail__label">{{ _('成立年份') }}</span>
-                    <span class="shelter-detail__value">{{ dog.shelter.founded_year }}</span>
+                    <span class="shelter-detail__value">{{ pet.shelter.founded_year }}</span>
                 </div>
                 <div class="shelter-detail__item shelter-detail__item--wide">
                     <span class="shelter-detail__label">{{ _('地址') }}</span>
-                    <span class="shelter-detail__value">{{ dog.shelter.address }}</span>
+                    <span class="shelter-detail__value">{{ pet.shelter.address }}</span>
                 </div>
                 <div class="shelter-detail__item shelter-detail__item--wide">
                     <span class="shelter-detail__label">{{ _('简介') }}</span>
-                    <span class="shelter-detail__value">{{ dog.shelter.description }}</span>
+                    <span class="shelter-detail__value">{{ pet.shelter.description }}</span>
                 </div>
             </div>
         </div>

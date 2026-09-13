@@ -1,0 +1,477 @@
+{#
+  动物救助页模板（参与公益 → 动物救助）。
+
+  页面结构：
+  1. 可以救助的动物：说明遗弃、受伤、生病等可上报情形；
+  2. 两种救助方式：送到最近的救助站，或上传照片与位置由工作人员前往；
+  3. 确定位置并查看最近救助站：可选择城市 / 输入地址 / 使用浏览器定位，
+     渲染 Leaflet 地图与救助站距离列表（GET 表单，保留在 URL 中可分享）；
+  4. 提交救助信息：上传现场照片、填写地点与联系方式（POST 表单）；
+  5. 救助进度：说明「未被救助 → 正在救助中 → 救助成功」三种状态。
+
+  模板变量：
+  * ``form``: ``RescueReportForm`` 实例。
+  * ``address`` / ``reference`` / ``reference_source``: 位置与参考点来源（geo / address）。
+  * ``shelters``: 最近救助站列表（含距离）。
+  * ``map_shelters`` / ``map_reference``: 供 Leaflet 绘制的地图数据。
+  * ``cities``: 可选城市列表。
+  * ``animal_options`` 等: 受控词表选项，用于页面说明文案。
+#}
+{% extends "base.html" %}
+
+{% macro field_errors(field) %}
+    {% for error in field.errors %}
+        <div class="invalid-feedback d-block">{{ _(error) }}</div>
+    {% endfor %}
+{% endmacro %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block styles %}
+    <!-- Leaflet 地图样式（浅色底图与站点蓝白主题一致） -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><span>{{ _('参与公益') }}</span></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+
+        {# ---------------------- 1. 可以救助的动物 ---------------------- #}
+        <h2 class="block-title">{{ _('哪些情况可以上报') }}</h2>
+        <ul class="reason-grid">
+            {% for situation in situation_options %}
+                <li class="reason-card">
+                    <span class="reason-card__dot" aria-hidden="true"></span>
+                    <span class="reason-card__text">{{ _(situation) }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+        <p class="section__desc section__desc--left">
+            {{ _('可上报的动物包括狗、猫与其他小动物；如无法判断种类，选择「不确定」即可，工作人员会现场确认。') }}
+        </p>
+
+        {# ---------------------- 2. 两种救助方式 ---------------------- #}
+        <h2 class="block-title">{{ _('两种救助方式') }}</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <article class="method-card">
+                    <span class="method-card__no">01</span>
+                    <h3 class="method-card__title">{{ _('送到最近的救助站') }}</h3>
+                    <p class="method-card__text">
+                        {{ _('如果动物可以被安全移动，可先在下方的地图中确认最近的救助站，直接送往即可。出发前建议先电话联系。') }}
+                    </p>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <article class="method-card method-card--accent">
+                    <span class="method-card__no">02</span>
+                    <h3 class="method-card__title">{{ _('上传照片与位置，由我们前往救助') }}</h3>
+                    <p class="method-card__text">
+                        {{ _('无法自行处理时，请上传现场照片并填写发现地点，我们会依据位置分配最近的工作人员前往救助。') }}
+                    </p>
+                </article>
+            </div>
+        </div>
+
+        {# ------------------ 3. 确定位置并查看附近救助站 ------------------ #}
+        <h2 class="block-title">{{ _('第一步：确定位置，查看最近救助站') }}</h2>
+        <form class="search-panel" method="get" action="{{ url_for('charity.rescue') }}" id="locate-form">
+            <input type="hidden" name="lat" id="locate-lat" value="{{ '%.4f'|format(reference[0]) if reference and reference_source == 'geo' }}">
+            <input type="hidden" name="lng" id="locate-lng" value="{{ '%.4f'|format(reference[1]) if reference and reference_source == 'geo' }}">
+            <div class="row g-3 align-items-end">
+                <div class="col-12 col-lg-4">
+                    <label class="form-label form-label--sm" for="locate-address">{{ _('所在地址 / 城市') }}</label>
+                    <input class="form-control" type="text" id="locate-address" name="address"
+                           value="{{ address }}"
+                           placeholder="{{ _('例如：上海市闵行区，或直接填写所在城市') }}">
+                    <p class="form-hint">{{ _('演示站点未接入地理编码，地址会按城市（上海 / 北京 / 广州 / 成都 / 杭州）粗定位。') }}</p>
+                </div>
+                <div class="col-12 col-lg-5">
+                    <div class="search-panel__actions">
+                        <button class="btn btn-primary" type="submit">{{ _('查看附近救助站') }}</button>
+                        <button class="btn btn-outline-primary" type="button" id="locate-btn">
+                            {{ _('使用我的位置') }}
+                        </button>
+                        {% if reference %}
+                            <a class="btn btn-link" href="{{ url_for('charity.rescue') }}">{{ _('清除位置') }}</a>
+                        {% endif %}
+                    </div>
+                    <p class="search-panel__hint" id="locate-status" role="status">
+                        {% if reference_source == 'geo' %}
+                            {{ _('已使用你的实时定位计算距离。') }}
+                        {% elif reference_source == 'address' %}
+                            {{ _('已按输入的地址匹配到城市中心。') }}
+                        {% else %}
+                            {{ _('请选择城市、填写地址，或使用我的位置。') }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <p class="form-label form-label--sm">{{ _('快速选择城市') }}</p>
+                    <div class="chip-list">
+                        {% for city in cities %}
+                            <a class="chip chip--link" href="{{ url_for('charity.rescue', address=city) }}">{{ _(city) }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        {% if reference %}
+            <div class="map-panel">
+                <div class="map-panel__map" id="rescue-map"
+                     data-shelters='{{ map_shelters | tojson }}'
+                     data-reference='{{ map_reference | tojson }}'></div>
+                <ul class="map-panel__list">
+                    {% for shelter in shelters %}
+                        <li class="map-target">
+                            <span class="map-target__pin">{{ loop.index }}</span>
+                            <span class="map-target__body">
+                                <span class="map-target__name">{{ shelter.name }}</span>
+                                <span class="map-target__address">{{ shelter.address }}</span>
+                                <span class="map-target__phone">{{ shelter.phone }}</span>
+                            </span>
+                            <span class="map-target__distance">
+                                {% if shelter.distance_km is not none %}
+                                    {{ _('%(km)s km', km=shelter.distance_km) }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="empty-state empty-state--inline">
+                <p class="empty-state__text">
+                    {{ _('确定位置后，这里会显示一张地图，标出最近的救助站与具体距离。') }}
+                </p>
+            </div>
+        {% endif %}
+
+        {# ---------------------- 4. 提交救助信息 ---------------------- #}
+        <h2 class="block-title">{{ _('第二步：提交救助信息') }}</h2>
+        <form class="apply-form" method="post" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('动物与情况') }}</legend>
+                <div class="row g-3">
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.animal_type.id }}">
+                            {{ _(form.animal_type.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ form.animal_type(class="form-select" + (" is-invalid" if form.animal_type.errors else "")) }}
+                        {{ field_errors(form.animal_type) }}
+                    </div>
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.situation.id }}">
+                            {{ _(form.situation.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ form.situation(class="form-select" + (" is-invalid" if form.situation.errors else "")) }}
+                        {{ field_errors(form.situation) }}
+                    </div>
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.urgency.id }}">
+                            {{ _(form.urgency.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ form.urgency(class="form-select" + (" is-invalid" if form.urgency.errors else "")) }}
+                        {{ field_errors(form.urgency) }}
+                    </div>
+                </div>
+
+                <div class="apply-field">
+                    <span class="form-label form-label--sm">{{ _(form.handling.label.text) }} <span class="req">*</span></span>
+                    <div class="option-row">
+                        {% for option in form.handling %}
+                            <div class="form-check form-check-inline">
+                                {{ option(class="form-check-input" + (" is-invalid" if form.handling.errors else "")) }}
+                                <label class="form-check-label" for="{{ option.id }}">{{ _(option.label.text) }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {{ field_errors(form.handling) }}
+                </div>
+
+                <div class="apply-field">
+                    <label class="form-label form-label--sm" for="{{ form.description.id }}">
+                        {{ _(form.description.label.text) }}
+                    </label>
+                    {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else "")) }}
+                    {{ field_errors(form.description) }}
+                </div>
+            </fieldset>
+
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('照片与位置') }}</legend>
+                <div class="row g-3">
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.photo.id }}">
+                            {{ _(form.photo.label.text) }}
+                        </label>
+                        {{ form.photo(class="form-control" + (" is-invalid" if form.photo.errors else ""), accept="image/*") }}
+                        {{ field_errors(form.photo) }}
+                        <p class="form-hint">{{ _('支持 jpg / jpeg / png / webp，单张不超过 5 MB。') }}</p>
+                        <div class="upload-preview" id="upload-preview" hidden>
+                            <img id="upload-preview-image" alt="{{ _('照片预览') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.address_text.id }}">
+                            {{ _(form.address_text.label.text) }} <span class="req">*</span>
+                        </label>
+                        {{ form.address_text(class="form-control" + (" is-invalid" if form.address_text.errors else ""),
+                                             placeholder=_('请尽量写明街道、门牌或附近地标')) }}
+                        {{ field_errors(form.address_text) }}
+                        <div class="search-panel__actions search-panel__actions--compact">
+                            <button class="btn btn-outline-primary btn-sm" type="button" id="fill-location-btn">
+                                {{ _('填入当前定位') }}
+                            </button>
+                        </div>
+                        <p class="form-hint" id="fill-location-hint">
+                            {{ _('点击后会写入经纬度，便于工作人员定位。') }}
+                        </p>
+                        {{ form.lat }}
+                        {{ form.lng }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="apply-section">
+                <legend class="apply-section__legend">{{ _('联系方式') }}</legend>
+                <div class="row g-3">
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.reporter_name.id }}">
+                            {{ _(form.reporter_name.label.text) }}
+                        </label>
+                        {{ form.reporter_name(class="form-control") }}
+                        {{ field_errors(form.reporter_name) }}
+                    </div>
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.reporter_phone.id }}">
+                            {{ _(form.reporter_phone.label.text) }}
+                        </label>
+                        {{ form.reporter_phone(class="form-control") }}
+                        {{ field_errors(form.reporter_phone) }}
+                    </div>
+                    <div class="col-md-4 apply-field">
+                        <label class="form-label form-label--sm" for="{{ form.reporter_email.id }}">
+                            {{ _(form.reporter_email.label.text) }}
+                        </label>
+                        {{ form.reporter_email(class="form-control") }}
+                        {{ field_errors(form.reporter_email) }}
+                    </div>
+                </div>
+
+                <div class="form-check apply-confirm">
+                    {{ form.confirm_accuracy(class="form-check-input" + (" is-invalid" if form.confirm_accuracy.errors else "")) }}
+                    <label class="form-check-label" for="{{ form.confirm_accuracy.id }}">
+                        {{ _(form.confirm_accuracy.label.text) }}
+                    </label>
+                </div>
+                {{ field_errors(form.confirm_accuracy) }}
+
+                <div class="apply-actions">
+                    <button class="btn btn-primary btn-lg" type="submit">{{ _('提交救助请求') }}</button>
+                    <a class="btn btn-outline-secondary btn-lg"
+                       href="{{ url_for('charity.rescue_reports') }}">{{ _('查看救助进度') }}</a>
+                </div>
+            </fieldset>
+        </form>
+
+        {# ---------------------- 5. 救助进度 ---------------------- #}
+        <h2 class="block-title">{{ _('救助进度') }}</h2>
+        <ol class="status-flow">
+            {% for status in status_options %}
+                <li class="status-flow__step status-flow__step--{{ loop.index }}">
+                    <span class="status-flow__label">{{ _(status) }}</span>
+                    <span class="status-flow__text">
+                        {% if loop.index == 1 %}
+                            {{ _('工单已提交，等待工作人员确认与分配。') }}
+                        {% elif loop.index == 2 %}
+                            {{ _('工作人员已接单，正在前往现场或与上报人联系。') }}
+                        {% else %}
+                            {{ _('动物已得到救助，并转入医疗观察或寻找领养。') }}
+                        {% endif %}
+                    </span>
+                </li>
+            {% endfor %}
+        </ol>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    /* 1. 依据参考点渲染地图：标记用户位置与最近救助站，并绘制连线与距离标签。 */
+    (function () {
+        var node = document.getElementById('rescue-map');
+        if (!node || typeof L === 'undefined') {
+            return;
+        }
+        var shelters = [];
+        var reference = null;
+        try {
+            shelters = JSON.parse(node.getAttribute('data-shelters') || '[]');
+            reference = JSON.parse(node.getAttribute('data-reference') || 'null');
+        } catch (error) {
+            return;
+        }
+        if (!reference || !shelters.length) {
+            return;
+        }
+
+        var map = L.map(node, { scrollWheelZoom: false, attributionControl: true });
+        /* 使用 OpenStreetMap 德国镜像瓦片：无需 API Key，风格与站点蓝白主题协调 */
+        L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var meIcon = L.divIcon({
+            className: 'map-marker map-marker--me',
+            html: '<span></span>',
+            iconSize: [18, 18]
+        });
+        var shelterIcon = L.divIcon({
+            className: 'map-marker map-marker--shelter',
+            html: '<span>站</span>',
+            iconSize: [22, 22]
+        });
+
+        var me = L.marker([reference.lat, reference.lng], { icon: meIcon })
+            .addTo(map)
+            .bindPopup('{{ _("你的位置 / 上报位置") }}');
+
+        shelters.forEach(function (shelter, index) {
+            var marker = L.marker([shelter.lat, shelter.lng], { icon: shelterIcon }).addTo(map);
+            var distance = shelter.distance_km === null || shelter.distance_km === undefined
+                ? ''
+                : ' · ' + shelter.distance_km + ' km';
+            marker.bindPopup(
+                '<strong>' + (index + 1) + '. ' + shelter.name + '</strong><br>' +
+                shelter.address + '<br>' + shelter.phone + distance
+            );
+            // 连线中点标注距离
+            L.polyline([[reference.lat, reference.lng], [shelter.lat, shelter.lng]], {
+                color: '#2563EB',
+                weight: 1.5,
+                dashArray: '5 5',
+                opacity: .7
+            }).addTo(map);
+            if (shelter.distance_km !== null && shelter.distance_km !== undefined) {
+                L.marker([
+                    (reference.lat + shelter.lat) / 2,
+                    (reference.lng + shelter.lng) / 2
+                ], {
+                    icon: L.divIcon({
+                        className: 'map-marker map-marker--distance',
+                        html: '<span>' + shelter.distance_km + ' km</span>',
+                        iconSize: [56, 20]
+                    })
+                }).addTo(map);
+            }
+        });
+
+        /* 取景只参考位置与最近的 2 个救助站：若把上千公里外的站点一并纳入，
+           地图会被拉得过远而失去参考价值，其余站点仍以标记形式保留 */
+        var focus = [[reference.lat, reference.lng]].concat(
+            shelters.slice(0, 2).map(function (shelter) {
+                return [shelter.lat, shelter.lng];
+            })
+        );
+        map.fitBounds(focus, { padding: [36, 36], maxZoom: 12 });
+        if (focus.length === 1) {
+            map.setView(focus[0], 11);
+        }
+    })();
+
+    /* 2. 「使用我的位置」按钮：写入经纬度后提交定位表单。 */
+    (function () {
+        var button = document.getElementById('locate-btn');
+        var status = document.getElementById('locate-status');
+        if (!button) {
+            return;
+        }
+        if (!navigator.geolocation) {
+            button.disabled = true;
+            return;
+        }
+        button.addEventListener('click', function () {
+            if (status) { status.textContent = '{{ _("正在获取你的位置…") }}'; }
+            navigator.geolocation.getCurrentPosition(function (position) {
+                document.getElementById('locate-lat').value = position.coords.latitude.toFixed(4);
+                document.getElementById('locate-lng').value = position.coords.longitude.toFixed(4);
+                document.getElementById('locate-form').submit();
+            }, function () {
+                if (status) { status.textContent = '{{ _("定位失败或未授权，请手动填写地址。") }}'; }
+            }, { timeout: 8000 });
+        });
+    })();
+
+    /* 3. 「填入当前定位」：把坐标写入救助申请表，并回填地址输入框。 */
+    (function () {
+        var button = document.getElementById('fill-location-btn');
+        var hint = document.getElementById('fill-location-hint');
+        if (!button) {
+            return;
+        }
+        button.addEventListener('click', function () {
+            if (!navigator.geolocation) {
+                if (hint) { hint.textContent = '{{ _("当前浏览器不支持定位，请手动填写地点。") }}'; }
+                return;
+            }
+            if (hint) { hint.textContent = '{{ _("正在获取你的位置…") }}'; }
+            navigator.geolocation.getCurrentPosition(function (position) {
+                document.getElementById('lat').value = position.coords.latitude.toFixed(4);
+                document.getElementById('lng').value = position.coords.longitude.toFixed(4);
+                var address = document.getElementById('address_text');
+                if (address && !address.value) {
+                    address.value = position.coords.latitude.toFixed(4) + ', ' + position.coords.longitude.toFixed(4);
+                }
+                if (hint) {
+                    hint.textContent = '{{ _("已填入经纬度，可继续补充详细地址。") }}';
+                }
+            }, function () {
+                if (hint) { hint.textContent = '{{ _("定位失败或未授权，请手动填写地点。") }}'; }
+            }, { timeout: 8000 });
+        });
+    })();
+
+    /* 4. 上传照片后即时预览。 */
+    (function () {
+        var input = document.getElementById('photo');
+        var box = document.getElementById('upload-preview');
+        var image = document.getElementById('upload-preview-image');
+        if (!input || !box || !image) {
+            return;
+        }
+        input.addEventListener('change', function () {
+            var file = input.files && input.files[0];
+            if (!file) {
+                box.hidden = true;
+                return;
+            }
+            image.src = URL.createObjectURL(file);
+            box.hidden = false;
+        });
+    })();
+</script>
+{% endblock %}

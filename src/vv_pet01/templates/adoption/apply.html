@@ -3,11 +3,11 @@
 
   字段结构参考 Humane World for Animals 发布的
   “Adopters Welcome: Sample questionnaire”，分为五个部分：
-  心仪的动物、申请人信息、家庭成员与家中宠物、希望沟通的话题、额外服务。
+  领养对象、申请人信息、家庭成员与家中宠物、希望沟通的话题、额外服务。
 
   模板变量：
   * ``form``: ``AdoptionApplicationForm`` 实例。
-  * ``dog``: 当前申请对应的狗狗档案（用于顶部概览卡片与隐藏字段预填）。
+  * ``pet``: 当前申请对应的宠物档案（用于顶部概览卡片与表单预填）。
   * ``origin`` / ``location_params``: 定位状态，用于在返回链接中保留定位。
 
   宏 ``field_errors`` 统一渲染校验错误，错误文案为中文 msgid，
@@ -35,12 +35,11 @@
         <nav aria-label="{{ _('面包屑导航') }}">
             <ol class="breadcrumb page-breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
-                <li class="breadcrumb-item"><span>{{ _('领养宠物') }}</span></li>
                 <li class="breadcrumb-item">
-                    <a href="{{ url_for('adoption.dogs', **location_params) }}">{{ _('领养狗狗') }}</a>
+                    <a href="{{ url_for('adoption.pets', **location_params) }}">{{ _('领养宠物') }}</a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{{ url_for('adoption.dog_detail', dog_id=dog.id, **location_params) }}">{{ dog.name }}</a>
+                    <a href="{{ url_for('adoption.pet_detail', pet_id=pet.id, **location_params) }}">{{ pet.name }}</a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
             </ol>
@@ -52,24 +51,24 @@
 
 <section class="section section--tight">
     <div class="container">
-        {# 待领养动物概览，确认申请对象 #}
+        {# 待领养宠物概览，确认申请对象 #}
         <div class="apply-subject">
             <img class="apply-subject__image"
-                 src="{{ dog.image }}"
-                 alt="{{ dog.name }}（{{ _(dog.breed) }}）"
-                 onerror="this.onerror=null;this.src='https://placehold.co/240x240/EFF6FF/2563EB?text={{ dog.name }}';">
+                 src="{{ pet.image }}"
+                 alt="{{ pet.name }}（{{ _(pet.breed) }}）"
+                 onerror="this.onerror=null;this.src='https://placehold.co/240x240/EFF6FF/2563EB?text={{ pet.name }}';">
             <div class="apply-subject__body">
-                <p class="apply-subject__eyebrow">{{ _('本次申请的动物') }}</p>
-                <h2 class="apply-subject__name">{{ dog.name }}</h2>
+                <p class="apply-subject__eyebrow">{{ _('本次申请的宠物') }}</p>
+                <h2 class="apply-subject__name">{{ pet.name }}</h2>
                 <p class="apply-subject__meta">
-                    {{ _(dog.breed) }} · {{ _(dog.gender) }} · {{ dog.age_text }} · {{ _(dog.size) }}
+                    {{ _(pet.species) }} · {{ _(pet.breed) }} · {{ _(pet.gender) }} · {{ pet.age_text }}{% if pet.size %} · {{ _(pet.size) }}{% endif %}
                 </p>
                 <p class="apply-subject__shelter">
-                    {{ _('来自 %(shelter)s（%(city)s）', shelter=dog.shelter.name, city=_(dog.city)) }}
+                    {{ _('来自 %(shelter)s（%(city)s）', shelter=pet.shelter.name, city=_(pet.city)) }}
                 </p>
             </div>
             <a class="btn btn-outline-primary apply-subject__back"
-               href="{{ url_for('adoption.dog_detail', dog_id=dog.id, **location_params) }}">
+               href="{{ url_for('adoption.pet_detail', pet_id=pet.id, **location_params) }}">
                 {{ _('返回详情') }}
             </a>
         </div>
@@ -244,7 +243,7 @@
                 <div class="apply-actions">
                     <button class="btn btn-primary btn-lg" type="submit">{{ _('提交申请') }}</button>
                     <a class="btn btn-outline-secondary btn-lg"
-                       href="{{ url_for('adoption.dog_detail', dog_id=dog.id, **location_params) }}">
+                       href="{{ url_for('adoption.pet_detail', pet_id=pet.id, **location_params) }}">
                         {{ _('取消') }}
                     </a>
                 </div>

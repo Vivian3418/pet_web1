@@ -1,0 +1,98 @@
+{#
+  爱心捐款回执页模板。
+
+  展示捐赠编号、金额、周期与用途，并说明后续扣款安排。
+
+  模板变量：
+  * ``donation``: 捐赠记录字典（含 frequency_label、amount_display 等派生字段）。
+#}
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--success">
+    <div class="container">
+        <nav aria-label="{{ _('面包屑导航') }}">
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('charity.donate') }}">{{ _('爱心捐款') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+            </ol>
+        </nav>
+        <span class="success-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+            </svg>
+        </span>
+        <h1 class="page-hero__title">{{ page_title }}</h1>
+        <p class="page-hero__desc">{{ page_desc }}</p>
+    </div>
+</section>
+
+<section class="section section--tight">
+    <div class="container">
+        <div class="receipt receipt--donation">
+            <div class="receipt__head">
+                <div>
+                    <p class="receipt__label">{{ _('捐赠编号') }}</p>
+                    <p class="receipt__reference">{{ donation.reference }}</p>
+                </div>
+                <span class="receipt__status">{{ _(donation.status_label) }}</span>
+            </div>
+
+            <p class="donation-amount">
+                <span class="donation-amount__value">{{ donation.amount_display }}</span>
+                <span class="donation-amount__unit">{{ _('元') }}</span>
+                <span class="donation-amount__frequency">{{ _(donation.frequency_label) }}</span>
+            </p>
+
+            <dl class="detail-list receipt__list">
+                <div class="detail-list__row">
+                    <dt>{{ _('捐赠人') }}</dt>
+                    <dd>{{ donation.display_name }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('电子邮箱') }}</dt>
+                    <dd>{{ donation.email }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('捐赠用途') }}</dt>
+                    <dd>{{ _(donation.designation) if donation.designation else _('不限用途（由救助站统一分配）') }}</dd>
+                </div>
+                <div class="detail-list__row">
+                    <dt>{{ _('提交时间') }}</dt>
+                    <dd>{{ donation.created_at_display }}</dd>
+                </div>
+            </dl>
+
+            {% if donation.message %}
+                <h2 class="receipt__title">{{ _('留言') }}</h2>
+                <p class="receipt__text">{{ donation.message }}</p>
+            {% endif %}
+
+            <h2 class="receipt__title">{{ _('后续安排') }}</h2>
+            <ol class="receipt__steps">
+                {% if donation.frequency == 'monthly' %}
+                    <li>{{ _('本演示站点未接入支付渠道，正式环境将跳转至支付页面完成签约。') }}</li>
+                    <li>{{ _('签约成功后每月自动扣款一次，扣款前 3 天会发送提醒邮件。') }}</li>
+                    <li>{{ _('可随时在捐赠记录页申请暂停或取消定期捐赠。') }}</li>
+                {% else %}
+                    <li>{{ _('本演示站点未接入支付渠道，正式环境将跳转至支付页面完成付款。') }}</li>
+                    <li>{{ _('付款完成后会向你填写的邮箱发送电子捐赠凭证。') }}</li>
+                    <li>{{ _('捐赠金额将按所选用途用于动物救助与日常运营。') }}</li>
+                {% endif %}
+            </ol>
+
+            <div class="detail-actions">
+                <a class="btn btn-primary"
+                   href="{{ url_for('charity.donations') }}">{{ _('查看捐赠记录') }}</a>
+                <a class="btn btn-outline-primary"
+                   href="{{ url_for('charity.rescue') }}">{{ _('了解动物救助') }}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -18,7 +18,7 @@
         <nav aria-label="{{ _('面包屑导航') }}">
             <ol class="breadcrumb page-breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
-                <li class="breadcrumb-item"><a href="{{ url_for('adoption.dogs') }}">{{ _('领养狗狗') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('adoption.pets') }}">{{ _('领养宠物') }}</a></li>
                 <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
             </ol>
         </nav>
@@ -51,8 +51,8 @@
                     <dd>{{ application.applicant_name }}</dd>
                 </div>
                 <div class="detail-list__row">
-                    <dt>{{ _('申请的动物') }}</dt>
-                    <dd>{{ application.dog_display_name or _('待救助站推荐') }}</dd>
+                    <dt>{{ _('申请的宠物') }}</dt>
+                    <dd>{{ application.pet_display_name or _('待救助站推荐') }}</dd>
                 </div>
                 <div class="detail-list__row">
                     <dt>{{ _('电子邮箱') }}</dt>
@@ -98,7 +98,7 @@
                 <a class="btn btn-primary"
                    href="{{ url_for('adoption.applications') }}">{{ _('查看申请记录') }}</a>
                 <a class="btn btn-outline-primary"
-                   href="{{ url_for('adoption.dogs') }}">{{ _('继续浏览待领养狗狗') }}</a>
+                   href="{{ url_for('adoption.pets') }}">{{ _('继续浏览待领养宠物') }}</a>
             </div>
         </div>
     </div>

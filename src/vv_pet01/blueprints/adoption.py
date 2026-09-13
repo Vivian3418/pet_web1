@@ -1,14 +1,15 @@
 """领养宠物板块蓝图模块。
 
-对应顶部导航「领养宠物」下拉菜单，全部路由均带 ``<lang_code>`` 语言前缀：
+对应顶部导航「领养宠物」，全部路由均带 ``<lang_code>`` 语言前缀：
 
-* ``/adoption/dogs``：领养狗狗搜索页（关键词、品种、体型、年龄、城市、
-  救助站筛选，并可按「附近救助站」排序）。
-* ``/adoption/dogs/<dog_id>``：狗狗详情页。
-* ``/adoption/dogs/<dog_id>/apply``：领养申请表（GET 展示 / POST 提交）。
+* ``/adoption/pets``：合并后的宠物领养检索页（狗 / 猫 / 其他宠物统一检索）。
+* ``/adoption/pets/<pet_id>``：宠物详情页。
+* ``/adoption/pets/<pet_id>/apply``：领养申请表（GET 展示 / POST 提交）。
 * ``/adoption/applications``：已提交申请列表。
 * ``/adoption/applications/<application_id>``：申请提交成功回执。
-* ``/adoption/cats``、``/adoption/others``、``/adoption/process``：占位页面。
+* ``/adoption/process``：领养流程页。
+* ``/adoption/dogs``、``/adoption/cats``、``/adoption/others``：旧入口，
+  永久重定向到合并页并预选对应类别，保证历史链接仍可访问。
 """
 
 from __future__ import annotations
@@ -16,19 +17,28 @@ from __future__ import annotations
 from flask import Blueprint, abort, redirect, render_template, request, url_for
 from flask_babel import gettext as _
 
-from vv_pet01.data.dogs import STATUS_ADOPTABLE, STATUS_OPTIONS
+from vv_pet01.data.taxonomy import (
+    COMPANION_OPTIONS,
+    RADIUS_OPTIONS,
+    STATUS_ADOPTABLE,
+    STATUS_OPTIONS,
+    breeds_for,
+    shows_size,
+)
 from vv_pet01.forms import AdoptionApplicationForm
 from vv_pet01.services.adoption import (
     DEFAULT_PER_PAGE,
     create_application,
     current_language,
     get_application,
-    get_dog_detail,
     get_filter_options,
+    get_pet_detail,
     list_applications,
     list_shelters,
+    nearby_shelter_ids,
     paginate,
-    search_dogs,
+    resolve_reference,
+    search_pets,
 )
 
 adoption_bp = Blueprint("adoption", __name__, url_prefix="/<lang_code>/adoption")
@@ -64,6 +74,22 @@ def _parse_page(value: str | None) -> int:
         return 1
 
 
+def _parse_radius(value: str | None) -> int:
+    """解析搜索距离查询参数。
+
+    Args:
+        value: 原始距离字符串（千米）。
+
+    Returns:
+        合法的距离值；``0`` 或非法输入表示不限距离。
+    """
+    try:
+        radius = int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+    return radius if radius in RADIUS_OPTIONS else 0
+
+
 def _parse_origin(args) -> tuple[float, float] | None:  # noqa: ANN001
     """从查询参数中解析用户当前位置。
 
@@ -85,178 +111,263 @@ def _parse_origin(args) -> tuple[float, float] | None:  # noqa: ANN001
     return lat, lng
 
 
-def _collect_filters(args) -> dict[str, str]:  # noqa: ANN001
-    """从查询参数中收集筛选条件。
+def _collect_filters(args) -> dict[str, object]:  # noqa: ANN001
+    """从查询参数中收集检索条件。
 
     Args:
         args: Flask 的 ``request.args`` 多值字典。
 
     Returns:
-        与 :func:`vv_pet01.services.adoption.search_dogs` 参数同名的筛选字典。
+        与 :func:`vv_pet01.services.adoption.search_pets` 参数同名的检索字典。
     """
     return {
+        "species": _clean(args.get("species")),
         "keyword": _clean(args.get("q")),
         "breed": _clean(args.get("breed")),
         "gender": _clean(args.get("gender")),
         "size": _clean(args.get("size")),
         "age_group": _clean(args.get("age")),
-        "city": _clean(args.get("city")),
+        "companions": [item for item in args.getlist("companion") if item in COMPANION_OPTIONS],
         "shelter_id": _clean(args.get("shelter")),
         "status": _clean(args.get("status")) or STATUS_ADOPTABLE,
     }
 
 
-def _build_base_params(
-    filters: dict[str, str],
-    sort: str,
-    origin: tuple[float, float] | None,
-) -> dict[str, str]:
-    """构造用于生成分页链接的基础查询参数（不含 ``page``）。
+def _sanitize_filters(filters: dict[str, object]) -> list[str]:
+    """清空与当前宠物类别不兼容的检索条件（就地修改）。
+
+    切换类别时，原类别下选择的品种与体型对新类别无效，需要丢弃，
+    否则会出现「选了猫却仍按犬类品种过滤」的空结果。
 
     Args:
-        filters: 当前生效的筛选条件。
-        sort: 当前排序方式。
-        origin: 用户当前位置。
+        filters: 检索条件字典，会被就地修改。
 
     Returns:
-        可直接展开传给 ``url_for`` 的查询参数字典。
+        被清空的字段名称列表，供页面提示使用。
     """
-    params: dict[str, str] = {}
-    for key, value in (
-        ("q", filters["keyword"]),
-        ("breed", filters["breed"]),
-        ("gender", filters["gender"]),
-        ("size", filters["size"]),
-        ("age", filters["age_group"]),
-        ("city", filters["city"]),
-        ("shelter", filters["shelter_id"]),
-    ):
-        if value:
-            params[key] = value
-    if filters["status"] != STATUS_ADOPTABLE:
-        params["status"] = filters["status"]
-    if sort:
-        params["sort"] = sort
+    species = str(filters.get("species") or "")
+    cleared: list[str] = []
+
+    breed = str(filters.get("breed") or "")
+    if breed and breed not in breeds_for(species):
+        filters["breed"] = ""
+        cleared.append("breed")
+
+    if not shows_size(species) and filters.get("size"):
+        filters["size"] = ""
+        cleared.append("size")
+
+    return cleared
+
+
+def _location_params(
+    origin: tuple[float, float] | None,
+    city: str,
+    radius: int,
+) -> dict[str, object]:
+    """构造用于在页面间保留定位与距离状态的查询参数。
+
+    Args:
+        origin: 用户定位坐标。
+        city: 所在地（城市名称）。
+        radius: 搜索距离（千米）。
+
+    Returns:
+        可直接展开传给 ``url_for`` 的参数字典。
+    """
+    params: dict[str, object] = {}
+    if city:
+        params["city"] = city
+    if radius:
+        params["radius"] = radius
     if origin is not None:
         params["lat"] = f"{origin[0]:.4f}"
         params["lng"] = f"{origin[1]:.4f}"
     return params
 
 
-def _location_params(origin: tuple[float, float] | None) -> dict[str, str]:
-    """构造仅包含定位信息的查询参数，用于在页面间保留定位状态。
+def _build_base_params(
+    filters: dict[str, object],
+    city: str,
+    radius: int,
+    sort: str,
+    origin: tuple[float, float] | None,
+) -> dict[str, object]:
+    """构造用于生成分页链接的基础查询参数（不含 ``page``）。
 
     Args:
-        origin: 用户当前位置。
+        filters: 当前生效的检索条件。
+        city: 所在地。
+        radius: 搜索距离。
+        sort: 当前排序方式。
+        origin: 用户定位坐标。
 
     Returns:
-        ``{"lat": ..., "lng": ...}``；未定位时为空字典。
+        可直接展开传给 ``url_for`` 的查询参数字典。
     """
-    if origin is None:
-        return {}
-    return {"lat": f"{origin[0]:.4f}", "lng": f"{origin[1]:.4f}"}
+    params: dict[str, object] = {}
+    for key, value in (
+        ("species", filters.get("species")),
+        ("q", filters.get("keyword")),
+        ("breed", filters.get("breed")),
+        ("gender", filters.get("gender")),
+        ("size", filters.get("size")),
+        ("age", filters.get("age_group")),
+        ("shelter", filters.get("shelter_id")),
+    ):
+        if value:
+            params[key] = value
+    companions = filters.get("companions") or []
+    if companions:
+        params["companion"] = list(companions)  # type: ignore[arg-type]
+    if filters.get("status") != STATUS_ADOPTABLE:
+        params["status"] = filters.get("status")
+    if sort:
+        params["sort"] = sort
+    params.update(_location_params(origin, city, radius))
+    return params
 
 
-@adoption_bp.get("/dogs")
-def dogs() -> str:
-    """领养狗狗搜索页。
+@adoption_bp.get("/pets")
+def pets() -> str:
+    """宠物领养检索页（狗 / 猫 / 其他宠物统一检索）。
 
-    解析查询参数并完成筛选、距离排序与分页，渲染搜索结果与附近救助站列表。
+    检索流程：所在地 + 搜索距离确定附近救助站，宠物类别决定可选品种与
+    是否展示体型，相处对象支持多选。切换类别时自动清空无效条件。
 
     Returns:
-        狗狗搜索页模板渲染后的 HTML 字符串。
+        检索页模板渲染后的 HTML 字符串。
     """
     filters = _collect_filters(request.args)
-    origin = _parse_origin(request.args)
+    cleared = _sanitize_filters(filters)
 
+    city = _clean(request.args.get("city"))
+    radius = _parse_radius(request.args.get("radius"))
+    origin = _parse_origin(request.args)
+    reference = resolve_reference(city, origin)
+    # 未选择所在地且未定位时，距离条件无法计算，按不限距离处理
+    if reference is None:
+        radius = 0
+
+    shelter_ids = nearby_shelter_ids(reference, radius)
+
+    # 侧栏选定救助站时，与半径结果取交集（未选则沿用半径结果）
+    selected_shelter = str(filters.get("shelter_id") or "")
+    if selected_shelter:
+        if shelter_ids is None or selected_shelter in shelter_ids:
+            shelter_ids = [selected_shelter]
+        else:
+            shelter_ids = []
+
+    species = str(filters.get("species") or "")
     requested_sort = _clean(request.args.get("sort"))
-    resolved_sort = requested_sort or ("distance" if origin else "latest")
-    # 未选择坐标时无法按距离排序，回退为最新发布
-    if resolved_sort == "distance" and origin is None:
+    resolved_sort = requested_sort or ("distance" if reference else "latest")
+    if resolved_sort == "distance" and reference is None:
         resolved_sort = "latest"
 
-    results = search_dogs(**filters, origin=origin, sort=resolved_sort)
+    # shelter_id 仅用于侧栏高亮与交集计算，检索函数使用 shelter_ids
+    search_filters = {key: value for key, value in filters.items() if key != "shelter_id"}
+    results = search_pets(
+        **search_filters,  # type: ignore[arg-type]
+        shelter_ids=shelter_ids,
+        reference=reference,
+        sort=resolved_sort,
+    )
     pagination = paginate(results, _parse_page(request.args.get("page")), DEFAULT_PER_PAGE)
-    filter_options = get_filter_options()
+    filter_options = get_filter_options(species)
 
     return render_template(
-        "adoption/dogs.html",
-        page_title=_("领养狗狗"),
-        page_desc=_("按品种、体型、年龄与所在城市筛选，或开启定位查找离你最近的救助站。"),
+        "adoption/pets.html",
+        page_title=_("领养宠物"),
+        page_desc=_("先选择所在地与搜索距离，再选择宠物类别，即可按品种、性格与家庭适配度筛选。"),
         pagination=pagination,
-        shelters=list_shelters(filters, origin=origin),
+        shelters=list_shelters(filters, reference=reference, radius_km=radius),
         filters=filters,
+        species=species,
         filter_options=filter_options,
         status_options=STATUS_OPTIONS,
         sort_options=filter_options["sorts"],
+        city=city,
+        radius=radius,
         origin=origin,
+        reference=reference,
         sort=resolved_sort,
-        base_params=_build_base_params(filters, resolved_sort, origin),
-        location_params=_location_params(origin),
+        cleared=cleared,
+        base_params=_build_base_params(filters, city, radius, resolved_sort, origin),
+        location_params=_location_params(origin, city, radius),
+        radius_options=RADIUS_OPTIONS,
     )
 
 
-@adoption_bp.get("/dogs/<int:dog_id>")
-def dog_detail(dog_id: int) -> str:
-    """狗狗详情页。
+@adoption_bp.get("/pets/<int:pet_id>")
+def pet_detail(pet_id: int) -> str:
+    """宠物详情页。
 
     Args:
-        dog_id: 路径参数中的狗狗编号。
+        pet_id: 路径参数中的宠物编号。
 
     Returns:
-        狗狗详情模板渲染后的 HTML 字符串。
+        宠物详情模板渲染后的 HTML 字符串。
 
     Raises:
-        werkzeug.exceptions.NotFound: 当狗狗编号不存在时抛出 404。
+        werkzeug.exceptions.NotFound: 当宠物编号不存在时抛出 404。
     """
+    city = _clean(request.args.get("city"))
+    radius = _parse_radius(request.args.get("radius"))
     origin = _parse_origin(request.args)
-    dog = get_dog_detail(dog_id, origin=origin)
-    if dog is None:
+    reference = resolve_reference(city, origin)
+
+    pet = get_pet_detail(pet_id, reference=reference)
+    if pet is None:
         abort(404)
 
     return render_template(
-        "adoption/dog_detail.html",
-        page_title=dog["name"],
-        dog=dog,
+        "adoption/pet_detail.html",
+        page_title=pet["name"],
+        pet=pet,
         origin=origin,
-        location_params=_location_params(origin),
+        location_params=_location_params(origin, city, radius),
     )
 
 
-@adoption_bp.route("/dogs/<int:dog_id>/apply", methods=["GET", "POST"])
-def apply(dog_id: int):
+@adoption_bp.route("/pets/<int:pet_id>/apply", methods=["GET", "POST"])
+def apply(pet_id: int):
     """领养申请表页面。
 
-    ``GET`` 渲染预填了狗狗信息的申请表；``POST`` 校验并写入数据库，
+    ``GET`` 渲染预填了宠物信息的申请表；``POST`` 校验并写入数据库，
     成功后重定向到申请回执页（PRG 模式，避免刷新重复提交）。
 
     Args:
-        dog_id: 路径参数中的狗狗编号。
+        pet_id: 路径参数中的宠物编号。
 
     Returns:
         GET 请求返回表单页 HTML；POST 成功返回 302 重定向。
 
     Raises:
-        werkzeug.exceptions.NotFound: 当狗狗编号不存在时抛出 404。
+        werkzeug.exceptions.NotFound: 当宠物编号不存在时抛出 404。
     """
+    city = _clean(request.args.get("city"))
+    radius = _parse_radius(request.args.get("radius"))
     origin = _parse_origin(request.args)
-    dog = get_dog_detail(dog_id, origin=origin)
-    if dog is None:
+    reference = resolve_reference(city, origin)
+
+    pet = get_pet_detail(pet_id, reference=reference)
+    if pet is None:
         abort(404)
 
     form = AdoptionApplicationForm()
 
     if request.method == "GET":
-        # 从详情页进入时预填动物呼名，减少重复输入
-        form.animal_name.data = dog["name"]
+        # 从详情页进入时预填宠物呼名，减少重复输入
+        form.animal_name.data = pet["name"]
 
     if form.validate_on_submit():
         payload = form.to_payload()
         payload.update(
             {
-                "dog_id": dog["id"],
-                "dog_name": dog["name_zh"],
-                "dog_name_en": dog["name_en"],
+                "pet_id": pet["id"],
+                "pet_name": pet["name_zh"],
+                "pet_name_en": pet["name_en"],
                 "locale": current_language(),
             }
         )
@@ -269,10 +380,10 @@ def apply(dog_id: int):
         "adoption/apply.html",
         page_title=_("领养申请表"),
         page_desc=_("请如实填写以下信息，救助站会据此与你联系并安排后续沟通。"),
-        dog=dog,
+        pet=pet,
         form=form,
         origin=origin,
-        location_params=_location_params(origin),
+        location_params=_location_params(origin, city, radius),
     )
 
 
@@ -321,34 +432,6 @@ def application_detail(application_id: int) -> str:
     )
 
 
-@adoption_bp.get("/cats")
-def cats() -> str:
-    """领养猫咪页面。
-
-    Returns:
-        通用占位模板渲染后的 HTML 字符串。
-    """
-    return render_template(
-        "page.html",
-        page_title=_("领养猫咪"),
-        page_desc=_("这里将展示等待领养的猫咪信息与领养条件。"),
-    )
-
-
-@adoption_bp.get("/others")
-def others() -> str:
-    """其他宠物领养页面。
-
-    Returns:
-        通用占位模板渲染后的 HTML 字符串。
-    """
-    return render_template(
-        "page.html",
-        page_title=_("其他宠物"),
-        page_desc=_("这里将展示兔子、鸟类等小动物的领养信息。"),
-    )
-
-
 @adoption_bp.get("/process")
 def process() -> str:
     """领养流程说明页面。
@@ -361,3 +444,33 @@ def process() -> str:
         page_title=_("领养流程"),
         page_desc=_("这里将介绍从申请、审核到交接的完整领养流程。"),
     )
+
+
+def _legacy_redirect(species: str):
+    """构造旧入口到合并检索页的永久重定向。
+
+    Args:
+        species: 需要预设的宠物类别。
+
+    Returns:
+        302/301 重定向响应。
+    """
+    return redirect(url_for("adoption.pets", species=species), code=301)
+
+
+@adoption_bp.get("/dogs")
+def legacy_dogs():
+    """旧「领养狗狗」入口，重定向到合并检索页（预选狗）。"""
+    return _legacy_redirect("狗")
+
+
+@adoption_bp.get("/cats")
+def legacy_cats():
+    """旧「领养猫咪」入口，重定向到合并检索页（预选猫）。"""
+    return _legacy_redirect("猫")
+
+
+@adoption_bp.get("/others")
+def legacy_others():
+    """旧「其他宠物」入口，重定向到合并检索页（预选其他宠物）。"""
+    return _legacy_redirect("其他宠物")

@@ -23,6 +23,9 @@ COPY wsgi.py gunicorn.conf.py ./
 # 安装项目本体（含 Flask 与 Gunicorn 依赖）
 RUN pip install --upgrade pip && pip install .
 
+# Install git
+RUN apt-get update && apt-get install -y git
+
 # 创建非 root 用户运行服务，降低容器逃逸风险
 # instance 目录用于存放 SQLite 数据库文件，需预创建并归属运行用户以便持久化写入
 RUN useradd --create-home --shell /usr/sbin/nologin appuser \

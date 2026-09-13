@@ -1037,3 +1037,906 @@ msgstr "Information about volunteering or fostering with us"
 
 msgid "资金或实物捐赠支持方式信息"
 msgstr "Information about supporting us with a financial or in-kind donation"
+
+# ===========================================================================
+# 合并领养界面后的新增文案（分步检索、类别联动、附近救助站）
+# ===========================================================================
+msgid "先选择所在地与搜索距离，再选择宠物类别，即可按品种、性格与家庭适配度筛选。"
+msgstr "Start with your location and search distance, then pick a pet type to filter by breed, temperament and household fit."
+
+msgid "选择所在地与搜索距离"
+msgstr "Choose your location and search distance"
+
+msgid "用于匹配附近的救助站"
+msgstr "Used to find nearby shelters"
+
+msgid "所在地"
+msgstr "Location"
+
+msgid "不限地区"
+msgstr "Any area"
+
+msgid "搜索距离"
+msgstr "Search distance"
+
+msgid "不限距离"
+msgstr "Any distance"
+
+msgid "%(km)s 公里内"
+msgstr "Within %(km)s km"
+
+msgid "清除定位"
+msgstr "Clear location"
+
+msgid "请选择所在地（或使用我的位置）后才能按距离筛选。"
+msgstr "Choose a location (or use my location) to filter by distance."
+
+msgid "当前参考点已确定，可继续选择宠物类别。"
+msgstr "Reference point set — now choose a pet type."
+
+msgid "已按你的实时定位计算距离"
+msgstr "Distances calculated from your current location"
+
+msgid "已按 %(city)s 中心计算距离"
+msgstr "Distances calculated from the centre of %(city)s"
+
+msgid "未选择所在地，正在按最新发布排序"
+msgstr "No location selected — currently sorted by newest"
+
+msgid "当前浏览器不支持定位，请手动选择所在地。"
+msgstr "Your browser does not support geolocation. Please choose an area manually."
+
+msgid "定位失败或未授权，请手动选择所在地。"
+msgstr "Location failed or was denied. Please choose an area manually."
+
+msgid "选择宠物类别"
+msgstr "Choose a pet type"
+
+msgid "宠物类别"
+msgstr "Pet type"
+
+msgid "切换类别会自动清空不适用的条件"
+msgstr "Switching type clears filters that no longer apply"
+
+msgid "已自动清空与当前类别不匹配的条件："
+msgstr "Automatically cleared filters that do not apply to the current type:"
+
+msgid "例如：选择「狗」只显示犬类品种，猫与其他宠物不显示体型。"
+msgstr "For example, choosing \"Dog\" shows only dog breeds, while cats and other pets have no size filter."
+
+msgid "细分条件"
+msgstr "Detail filters"
+
+msgid "随宠物类别联动显示"
+msgstr "Shown based on the pet type"
+
+msgid "适合与哪些对象相处"
+msgstr "Good with"
+
+msgid "按住 Ctrl / Cmd 可多选；命中任意一项即匹配。"
+msgstr "Hold Ctrl / Cmd to select more than one; matching any of them counts."
+
+msgid "全部宠物"
+msgstr "All pets"
+
+msgid "搜索宠物"
+msgstr "Search pets"
+
+msgid "搜索呼名、品种、性格或救助站"
+msgstr "Search by name, breed, temperament or shelter"
+
+msgid "取消救助站筛选"
+msgstr "Clear shelter filter"
+
+msgid "只待领养宠物"
+msgstr "pet(s) available"
+
+msgid "体重"
+msgstr "Weight"
+
+msgid "本次申请的宠物"
+msgstr "Pet in this application"
+
+msgid "申请的宠物"
+msgstr "Pet applied for"
+
+msgid "没有找到符合条件的宠物"
+msgstr "No pets match your filters"
+
+msgid "试着放宽品种、年龄或相处对象条件，或者扩大搜索距离看看。"
+msgstr "Try loosening the breed, age or household-fit filters, or widen the search distance."
+
+msgid "查看全部待领养宠物"
+msgstr "View all adoptable pets"
+
+msgid "继续浏览待领养宠物"
+msgstr "Keep browsing adoptable pets"
+
+msgid "前往领养宠物页面挑选一只宠物并提交申请，记录会显示在这里。"
+msgstr "Pick a pet on the adoption page and submit an application — it will show up here."
+
+msgid "去挑选宠物"
+msgstr "Choose a pet"
+
+# ---------------------------------------------------------------------------
+# 受控词表（变量翻译，不会被 pybabel extract 抽取，需手工维护）
+# ---------------------------------------------------------------------------
+msgid "狗"
+msgstr "Dog"
+
+msgid "猫"
+msgstr "Cat"
+
+msgid "中华田园猫"
+msgstr "Chinese Domestic Cat"
+
+msgid "英国短毛猫"
+msgstr "British Shorthair"
+
+msgid "美国短毛猫"
+msgstr "American Shorthair"
+
+msgid "布偶猫"
+msgstr "Ragdoll"
+
+msgid "暹罗猫"
+msgstr "Siamese"
+
+msgid "橘猫"
+msgstr "Orange Tabby"
+
+msgid "奶牛猫"
+msgstr "Tuxedo Cat"
+
+msgid "波斯猫"
+msgstr "Persian"
+
+msgid "垂耳兔"
+msgstr "Lop-eared Rabbit"
+
+msgid "侏儒兔"
+msgstr "Dwarf Rabbit"
+
+msgid "虎皮鹦鹉"
+msgstr "Budgerigar"
+
+msgid "玄凤鹦鹉"
+msgstr "Cockatiel"
+
+msgid "适合与其他狗相处"
+msgstr "Good with other dogs"
+
+msgid "适合与其他猫相处"
+msgstr "Good with other cats"
+
+msgid "适合上班族（长时间独处）"
+msgstr "Great for working owners (long hours alone)"
+
+msgid "适合老年家庭"
+msgstr "Great for senior owners"
+
+msgid "喜欢啃咬"
+msgstr "Loves to chew"
+
+msgid "叫声清脆"
+msgstr "Clear, melodious calls"
+
+msgid "一岁以下"
+msgstr "Under 1 year"
+
+msgid "一至三岁"
+msgstr "1 - 3 years"
+
+msgid "三至七岁"
+msgstr "3 - 7 years"
+
+msgid "七岁以上"
+msgstr "Over 7 years"
+
+# ===========================================================================
+# 动物救助（参与公益 → 动物救助）
+# ===========================================================================
+msgid "动物救助"
+msgstr "Animal Rescue"
+
+msgid "发现需要帮助的动物时，可以先确认附近救助站，也可以上传照片与位置由我们前往救助。"
+msgstr "When you find an animal in need, check the nearest shelter first, or upload a photo and location and we will come to help."
+
+msgid "哪些情况可以上报"
+msgstr "What can be reported"
+
+msgid "可上报的动物包括狗、猫与其他小动物；如无法判断种类，选择「不确定」即可，工作人员会现场确认。"
+msgstr "You can report dogs, cats and other small animals. If you are unsure of the species, choose \"Not sure\" and our staff will confirm on site."
+
+msgid "两种救助方式"
+msgstr "Two ways to help"
+
+msgid "送到最近的救助站"
+msgstr "Take it to the nearest shelter"
+
+msgid "如果动物可以被安全移动，可先在下方的地图中确认最近的救助站，直接送往即可。出发前建议先电话联系。"
+msgstr "If the animal can be moved safely, use the map below to find the nearest shelter and take it there. Please call ahead first."
+
+msgid "上传照片与位置，由我们前往救助"
+msgstr "Upload a photo and location, and we will come to the rescue"
+
+msgid "无法自行处理时，请上传现场照片并填写发现地点，我们会依据位置分配最近的工作人员前往救助。"
+msgstr "If you cannot handle it yourself, upload an on-site photo and enter the location; we will assign the nearest staff member to help."
+
+msgid "第一步：确定位置，查看最近救助站"
+msgstr "Step 1: Set your location and find nearby shelters"
+
+msgid "所在地址 / 城市"
+msgstr "Address / city"
+
+msgid "例如：上海市闵行区，或直接填写所在城市"
+msgstr "e.g. Minhang District, Shanghai, or simply the city"
+
+msgid "演示站点未接入地理编码，地址会按城市（上海 / 北京 / 广州 / 成都 / 杭州）粗定位。"
+msgstr "This demo does not include geocoding; an address is roughly located to one of the supported cities (Shanghai, Beijing, Guangzhou, Chengdu, Hangzhou)."
+
+msgid "查看附近救助站"
+msgstr "Find nearby shelters"
+
+msgid "清除位置"
+msgstr "Clear location"
+
+msgid "已使用你的实时定位计算距离。"
+msgstr "Distances calculated from your current location."
+
+msgid "已按输入的地址匹配到城市中心。"
+msgstr "Matched the entered address to a city centre."
+
+msgid "请选择城市、填写地址，或使用我的位置。"
+msgstr "Pick a city, enter an address, or use my location."
+
+msgid "快速选择城市"
+msgstr "Quick city pick"
+
+msgid "%(km)s km"
+msgstr "%(km)s km"
+
+msgid "确定位置后，这里会显示一张地图，标出最近的救助站与具体距离。"
+msgstr "Once a location is set, a map showing the nearest shelters and distances will appear here."
+
+msgid "你的位置 / 上报位置"
+msgstr "Your location / reported location"
+
+msgid "定位失败或未授权，请手动填写地址。"
+msgstr "Location failed or was denied. Please enter an address manually."
+
+msgid "第二步：提交救助信息"
+msgstr "Step 2: Submit the rescue report"
+
+msgid "动物与情况"
+msgstr "Animal and situation"
+
+msgid "需要救助的动物"
+msgstr "Animal needing help"
+
+msgid "动物目前的情况"
+msgstr "Current situation"
+
+msgid "紧急程度"
+msgstr "Urgency"
+
+msgid "希望的救助方式"
+msgstr "Preferred rescue method"
+
+msgid "情况补充描述"
+msgstr "Additional description"
+
+msgid "照片与位置"
+msgstr "Photo and location"
+
+msgid "现场照片"
+msgstr "On-site photo"
+
+msgid "支持 jpg / jpeg / png / webp，单张不超过 5 MB。"
+msgstr "Supports jpg / jpeg / png / webp, up to 5 MB each."
+
+msgid "照片预览"
+msgstr "Photo preview"
+
+msgid "发现地点"
+msgstr "Location found"
+
+msgid "请尽量写明街道、门牌或附近地标"
+msgstr "Please include the street, number or a nearby landmark"
+
+msgid "填入当前定位"
+msgstr "Fill in my location"
+
+msgid "点击后会写入经纬度，便于工作人员定位。"
+msgstr "Click to fill in coordinates so staff can locate it."
+
+msgid "定位失败或未授权，请手动填写地点。"
+msgstr "Location failed or was denied. Please enter the location manually."
+
+msgid "已填入经纬度，可继续补充详细地址。"
+msgstr "Coordinates filled in; you can add a detailed address."
+
+msgid "当前浏览器不支持定位，请手动填写地点。"
+msgstr "Your browser does not support geolocation. Please enter the location manually."
+
+msgid "提交救助请求"
+msgstr "Submit rescue request"
+
+msgid "查看救助进度"
+msgstr "View rescue progress"
+
+msgid "救助进度"
+msgstr "Rescue progress"
+
+msgid "工单已提交，等待工作人员确认与分配。"
+msgstr "Report submitted — waiting for staff confirmation and assignment."
+
+msgid "工作人员已接单，正在前往现场或与上报人联系。"
+msgstr "Staff have accepted the case and are on the way or in contact with the reporter."
+
+msgid "动物已得到救助，并转入医疗观察或寻找领养。"
+msgstr "The animal has been rescued and moved into medical care or adoption."
+
+msgid "救助请求已提交"
+msgstr "Rescue Request Submitted"
+
+msgid "我们已收到你的救助请求，工作人员会尽快联系并跟进。"
+msgstr "We have received your rescue request. Staff will contact you and follow up as soon as possible."
+
+msgid "救助编号"
+msgstr "Rescue reference"
+
+msgid "上报时间"
+msgstr "Reported at"
+
+msgid "最近更新"
+msgstr "Last updated"
+
+msgid "最近救助站"
+msgstr "Nearest shelter"
+
+msgid "待分配"
+msgstr "To be assigned"
+
+msgid "处理备注"
+msgstr "Handling note"
+
+msgid "救助工单"
+msgstr "Rescue Reports"
+
+msgid "这里展示全部救助上报记录，工作人员可以在此推进处理状态。"
+msgstr "All rescue reports are listed here; staff can advance the handling status."
+
+msgid "全部"
+msgstr "All"
+
+msgid "未上传照片"
+msgstr "No photo"
+
+msgid "最近救助站：%(name)s"
+msgstr "Nearest shelter: %(name)s"
+
+msgid "处理备注：%(note)s"
+msgstr "Handling note: %(note)s"
+
+msgid "处理备注（选填）"
+msgstr "Handling note (optional)"
+
+msgid "开始救助"
+msgstr "Start rescue"
+
+msgid "标记救助成功"
+msgstr "Mark as rescued"
+
+msgid "流程已完成"
+msgstr "Completed"
+
+msgid "救助工单分页"
+msgstr "Rescue report pagination"
+
+msgid "当前没有救助工单"
+msgstr "No rescue reports yet"
+
+msgid "前往动物救助页面提交一条救助上报，记录会显示在这里。"
+msgstr "Submit a rescue report on the animal rescue page — it will show up here."
+
+msgid "前往动物救助"
+msgstr "Go to animal rescue"
+
+msgid "再上报一条救助信息"
+msgstr "Report another rescue"
+
+msgid "了解动物救助"
+msgstr "Learn about animal rescue"
+
+msgid "未被救助：工单已提交，等待工作人员确认与分配。"
+msgstr "Not yet rescued: the report is submitted and awaiting confirmation and assignment."
+
+msgid "正在救助中：工作人员已接单，正在前往现场或与上报人联系。"
+msgstr "Being rescued: staff have accepted the case and are on the way or in contact with the reporter."
+
+msgid "救助成功：动物已得到救助，并转入医疗观察或寻找领养。"
+msgstr "Rescued: the animal has been rescued and moved into medical care or adoption."
+
+msgid "上传文件过大"
+msgstr "File Too Large"
+
+msgid "上传的图片超过了 %(limit)s MB 的限制，请压缩后重新提交。"
+msgstr "The uploaded image exceeds the %(limit)s MB limit. Please compress it and submit again."
+
+# ---------------------------------------------------------------------------
+# 受控词表：救助类别 / 情形 / 紧急程度 / 处理方式 / 状态
+# ---------------------------------------------------------------------------
+msgid "不确定"
+msgstr "Not sure"
+
+msgid "被遗弃"
+msgstr "Abandoned"
+
+msgid "受伤"
+msgstr "Injured"
+
+msgid "生病"
+msgstr "Sick"
+
+msgid "被困求助"
+msgstr "Trapped and in need of help"
+
+msgid "疑似遭受虐待"
+msgstr "Suspected abuse"
+
+msgid "幼崽失去母兽"
+msgstr "Orphaned young animal"
+
+msgid "情况紧急（需立即处理）"
+msgstr "Urgent (needs immediate help)"
+
+msgid "情况较急（24 小时内）"
+msgstr "Fairly urgent (within 24 hours)"
+
+msgid "情况稳定（可安排时间）"
+msgstr "Stable (can be scheduled)"
+
+msgid "我会送到最近的救助站"
+msgstr "I will take it to the nearest shelter"
+
+msgid "请安排工作人员前来救助"
+msgstr "Please send staff to help"
+
+msgid "未被救助"
+msgstr "Not yet rescued"
+
+msgid "正在救助中"
+msgstr "Being rescued"
+
+msgid "救助成功"
+msgstr "Rescued"
+
+# ===========================================================================
+# 成为志愿者（参与公益 → 成为志愿者）
+# ===========================================================================
+msgid "志愿者是救助站最重要的支持力量，欢迎了解工作内容并提交申请。"
+msgstr "Volunteers are the shelter's most important source of support. Learn what the work involves and apply below."
+
+msgid "已有"
+msgstr "Already"
+
+msgid "位伙伴提交了申请"
+msgstr "volunteers have applied"
+
+msgid "志愿者主要做什么"
+msgstr "What volunteers do"
+
+msgid "我们希望你有"
+msgstr "What we look for"
+
+msgid "对动物的耐心与责任心，能按约定时间到岗。"
+msgstr "Patience and a sense of responsibility, and the ability to show up as agreed."
+
+msgid "愿意学习救助站的安全规范与操作流程。"
+msgstr "Willing to learn the shelter's safety rules and standard procedures."
+
+msgid "能够与工作人员配合，如实记录动物状况。"
+msgstr "Able to work with staff and record animal conditions accurately."
+
+msgid "参与流程"
+msgstr "How to get involved"
+
+msgid "提交志愿者申请表"
+msgstr "Submit the volunteer application"
+
+msgid "与志愿者协调员面谈，确认适合的岗位"
+msgstr "Meet the volunteer coordinator to confirm a suitable role"
+
+msgid "参加入职导览与安全培训，签署志愿者协议"
+msgstr "Attend the orientation and safety training, and sign the volunteer agreement"
+
+msgid "按岗位排班到岗，记录服务时数"
+msgstr "Work your scheduled shifts and log your service hours"
+
+msgid "志愿者申请表"
+msgstr "Volunteer Application Form"
+
+msgid "一、基本信息"
+msgstr "1. Basic information"
+
+msgid "姓名"
+msgstr "Name"
+
+msgid "所在城市"
+msgstr "City"
+
+msgid "二、技能与专长"
+msgstr "2. Skills and expertise"
+
+msgid "请勾选你可以贡献的技能，并在下方补充资质或作品说明，便于我们安排合适的岗位。"
+msgstr "Tick the skills you can contribute and add qualifications or portfolio notes below, so we can match you to a suitable role."
+
+msgid "三、希望参与的工作与时间"
+msgstr "3. Work and time preferences"
+
+msgid "希望参与的工作内容"
+msgstr "Work you would like to take part in"
+
+msgid "可投入的时间"
+msgstr "Time you can commit"
+
+msgid "可开始服务的日期"
+msgstr "Available start date"
+
+msgid "例如：2026-10-01，或随时可以开始"
+msgstr "e.g. 2026-10-01, or available immediately"
+
+msgid "四、经历与意愿"
+msgstr "4. Experience and motivation"
+
+msgid "五、健康与紧急联系"
+msgstr "5. Health and emergency contact"
+
+msgid "涉及动物护理与体力工作时，救助站会提供安全指南与必要防护用品。"
+msgstr "For animal care and physical tasks, the shelter provides safety guidance and necessary protective equipment."
+
+msgid "本表参考 Best Friends Animal Society 的 Volunteer Engagement 指南设计。"
+msgstr "This form is based on the Volunteer Engagement guide from Best Friends Animal Society."
+
+msgid "提交志愿者申请"
+msgstr "Submit volunteer application"
+
+msgid "志愿者申请已提交"
+msgstr "Volunteer Application Submitted"
+
+msgid "感谢你的加入！我们会在 5 个工作日内与你联系安排面谈与培训。"
+msgstr "Thank you for joining us! We will contact you within 5 working days to arrange an interview and training."
+
+msgid "可提供的技能与专长"
+msgstr "Skills and expertise you can offer"
+
+msgid "可服务时段"
+msgstr "Available time slots"
+
+msgid "志愿者协调员会在 5 个工作日内与你联系，安排一次面谈。"
+msgstr "The volunteer coordinator will contact you within 5 working days to arrange an interview."
+
+msgid "面谈后确认适合的岗位与排班，并邀请你参加入职导览。"
+msgstr "After the interview we will confirm a suitable role and schedule, and invite you to the orientation."
+
+msgid "完成安全培训并签署志愿者协议与免责声明。"
+msgstr "Complete the safety training and sign the volunteer agreement and liability waiver."
+
+msgid "按排班到岗服务，我们会在系统中记录你的服务时数。"
+msgstr "Work your shifts; we will record your service hours in our system."
+
+# ---------------------------------------------------------------------------
+# 受控词表：志愿者工作内容 / 技能 / 时段 / 投入
+# ---------------------------------------------------------------------------
+msgid "洗澡与基础美容"
+msgstr "Bathing and basic grooming"
+
+msgid "喂食与换水"
+msgstr "Feeding and refreshing water"
+
+msgid "记录身体状况"
+msgstr "Recording health and body condition"
+
+msgid "运输动物"
+msgstr "Transporting animals"
+
+msgid "遛狗与陪玩"
+msgstr "Dog walking and playtime"
+
+msgid "清洁犬舍与猫舍"
+msgstr "Cleaning kennels and catteries"
+
+msgid "清理猫砂盆"
+msgstr "Cleaning litter boxes"
+
+msgid "摄影与宣传"
+msgstr "Photography and outreach"
+
+msgid "档案与数据录入"
+msgstr "Records and data entry"
+
+msgid "活动现场协助"
+msgstr "Event support"
+
+msgid "动物护理经验"
+msgstr "Animal care experience"
+
+msgid "兽医或护理专业背景"
+msgstr "Veterinary or nursing background"
+
+msgid "驾驶与动物运输"
+msgstr "Driving and animal transport"
+
+msgid "摄影与视频剪辑"
+msgstr "Photography and video editing"
+
+msgid "设计与新媒体运营"
+msgstr "Design and social media"
+
+msgid "活动组织与执行"
+msgstr "Event planning and delivery"
+
+msgid "外语翻译"
+msgstr "Translation and interpreting"
+
+msgid "表格与数据整理"
+msgstr "Spreadsheets and data cleanup"
+
+msgid "工作日上午"
+msgstr "Weekday mornings"
+
+msgid "工作日下午"
+msgstr "Weekday afternoons"
+
+msgid "周末上午"
+msgstr "Weekend mornings"
+
+msgid "周末下午"
+msgstr "Weekend afternoons"
+
+msgid "可远程协助"
+msgstr "Can help remotely"
+
+msgid "每周 2 小时以内"
+msgstr "Up to 2 hours a week"
+
+msgid "每周 2 - 4 小时"
+msgstr "2 - 4 hours a week"
+
+msgid "每周 4 - 8 小时"
+msgstr "4 - 8 hours a week"
+
+msgid "每周 8 小时以上"
+msgstr "More than 8 hours a week"
+
+msgid "仅活动日参与"
+msgstr "Event days only"
+
+msgid "待面谈"
+msgstr "Interview pending"
+
+msgid "入职培训中"
+msgstr "In onboarding"
+
+# ===========================================================================
+# 爱心捐款（参与公益 → 爱心捐款）
+# ===========================================================================
+msgid "爱心捐款"
+msgstr "Donate"
+
+msgid "你的每一笔捐赠都会用于动物救助、医疗绝育与日常物资。"
+msgstr "Every donation goes to animal rescue, medical care and neutering, and daily supplies."
+
+msgid "累计捐赠金额（元）"
+msgstr "Total donated (CNY)"
+
+msgid "每月定期金额（元）"
+msgstr "Monthly recurring amount (CNY)"
+
+msgid "捐赠笔数"
+msgstr "Number of donations"
+
+msgid "爱心捐赠人"
+msgstr "Donors"
+
+msgid "一、选择捐赠方式"
+msgstr "1. Choose how you give"
+
+msgid "二、选择捐赠金额"
+msgstr "2. Choose an amount"
+
+msgid "三、捐赠人信息"
+msgstr "3. Donor details"
+
+msgid "一次性捐赠"
+msgstr "One-time donation"
+
+msgid "本次捐赠一次性完成。"
+msgstr "This is a single, one-off donation."
+
+msgid "每月定期捐赠"
+msgstr "Monthly donation"
+
+msgid "每月自动扣款一次，可随时取消。"
+msgstr "Charged automatically once a month; cancel any time."
+
+msgid "选择「自定义金额」时以此处填写的金额为准。"
+msgstr "When you choose \"Custom amount\", the value entered here is used."
+
+msgid "捐赠人"
+msgstr "Donor"
+
+msgid "捐赠用途"
+msgstr "Designation"
+
+msgid "留言"
+msgstr "Message"
+
+msgid "元"
+msgstr "CNY"
+
+msgid "演示站点不接入真实支付渠道，提交后仅生成捐赠意向记录。"
+msgstr "This demo does not process real payments; submitting only creates a donation pledge record."
+
+msgid "确认捐赠"
+msgstr "Confirm donation"
+
+msgid "查看捐赠记录"
+msgstr "View donation records"
+
+msgid "捐款去向"
+msgstr "Where your donation goes"
+
+msgid "动物救助行动：受伤与被困动物的现场救助与运输。"
+msgstr "Rescue operations: on-site rescue and transport for injured or trapped animals."
+
+msgid "医疗与绝育：疫苗、驱虫、绝育手术与术后护理。"
+msgstr "Medical care and neutering: vaccines, deworming, spay/neuter surgery and aftercare."
+
+msgid "粮食与日常物资：犬猫粮、猫砂、清洁与保暖用品。"
+msgstr "Food and supplies: dog and cat food, litter, cleaning and bedding items."
+
+msgid "志愿者培训：安全培训、岗位培训与防护物资。"
+msgstr "Volunteer training: safety and role training, plus protective supplies."
+
+msgid "最近捐赠"
+msgstr "Recent donations"
+
+msgid "感谢你的爱心捐赠"
+msgstr "Thank You for Your Donation"
+
+msgid "我们已记录你的捐赠意向，将按你选择的方式完成扣款。"
+msgstr "We have recorded your donation pledge and will process it using the method you chose."
+
+msgid "捐赠编号"
+msgstr "Donation reference"
+
+msgid "后续安排"
+msgstr "What happens next"
+
+msgid "本演示站点未接入支付渠道，正式环境将跳转至支付页面完成付款。"
+msgstr "This demo does not connect to a payment provider; in production you would be redirected to a payment page."
+
+msgid "付款完成后会向你填写的邮箱发送电子捐赠凭证。"
+msgstr "Once payment is complete, an electronic receipt will be sent to the email you provided."
+
+msgid "捐赠金额将按所选用途用于动物救助与日常运营。"
+msgstr "The amount will be used for animal rescue and daily operations according to the designation you chose."
+
+msgid "本演示站点未接入支付渠道，正式环境将跳转至支付页面完成签约。"
+msgstr "This demo does not connect to a payment provider; in production you would be redirected to set up the recurring payment."
+
+msgid "签约成功后每月自动扣款一次，扣款前 3 天会发送提醒邮件。"
+msgstr "Once set up, the amount is charged monthly, with a reminder email 3 days before each charge."
+
+msgid "可随时在捐赠记录页申请暂停或取消定期捐赠。"
+msgstr "You can pause or cancel your monthly donation at any time from the donation records page."
+
+msgid "捐赠记录"
+msgstr "Donation Records"
+
+msgid "这里展示本站收到的全部爱心捐赠。"
+msgstr "All donations received by this site are listed here."
+
+msgid "捐赠方式"
+msgstr "Donation type"
+
+msgid "金额（元）"
+msgstr "Amount (CNY)"
+
+msgid "捐赠记录分页"
+msgstr "Donation records pagination"
+
+msgid "还没有收到捐赠"
+msgstr "No donations yet"
+
+msgid "成为第一个支持我们的人，捐赠记录会显示在这里。"
+msgstr "Be the first to support us — your donation will appear here."
+
+msgid "了解爱心捐款"
+msgstr "Learn about donating"
+
+# ---------------------------------------------------------------------------
+# 受控词表：捐赠档位 / 用途 / 周期与状态
+# ---------------------------------------------------------------------------
+msgid "10 元"
+msgstr "CNY 10"
+
+msgid "25 元"
+msgstr "CNY 25"
+
+msgid "50 元"
+msgstr "CNY 50"
+
+msgid "75 元"
+msgstr "CNY 75"
+
+msgid "100 元"
+msgstr "CNY 100"
+
+msgid "自定义金额"
+msgstr "Custom amount"
+
+msgid "不限用途（由救助站统一分配）"
+msgstr "Where it is needed most (allocated by the shelter)"
+
+msgid "动物救助行动"
+msgstr "Rescue operations"
+
+msgid "医疗与绝育"
+msgstr "Medical care and neutering"
+
+msgid "粮食与日常物资"
+msgstr "Food and daily supplies"
+
+msgid "志愿者培训"
+msgstr "Volunteer training"
+
+msgid "待扣款"
+msgstr "Payment pending"
+
+# ---------------------------------------------------------------------------
+# 表单字段标签（模板中以 _(field.label.text) 形式渲染，无法被自动抽取）
+# ---------------------------------------------------------------------------
+msgid "你的称呼"
+msgstr "Your name"
+
+msgid "自定义金额（元）"
+msgstr "Custom amount (CNY)"
+
+msgid "以匿名方式捐赠"
+msgstr "Donate anonymously"
+
+msgid "职业 / 专业"
+msgstr "Occupation / field of study"
+
+msgid "我已年满 18 周岁"
+msgstr "I am 18 years old or over"
+
+msgid "监护人姓名（未满 18 周岁填写）"
+msgstr "Guardian name (if under 18)"
+
+msgid "其他技能或相关资格"
+msgstr "Other skills or qualifications"
+
+msgid "过往志愿服务经历"
+msgstr "Previous volunteering experience"
+
+msgid "为什么想加入志愿者"
+msgstr "Why do you want to volunteer?"
+
+msgid "我可以胜任需要体力或长时间站立的工作"
+msgstr "I can handle physical work or long periods on my feet"
+
+msgid "我已阅读并同意遵守志愿者手册与安全指南"
+msgstr "I have read and agree to follow the volunteer handbook and safety guidelines"
+
+msgid "紧急联系人"
+msgstr "Emergency contact"
+
+msgid "紧急联系人电话"
+msgstr "Emergency contact phone"
+
+msgid "爱心人士"
+msgstr "Anonymous donor"

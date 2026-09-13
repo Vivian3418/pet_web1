@@ -100,16 +100,20 @@ def init_app(app: Flask) -> None:
 
         Returns:
             语言代码。优先使用 URL 前缀，其次会话记录，再次浏览器偏好，
-            最终回退到默认语言。
+            最终回退到默认语言；无请求上下文（CLI、后台任务）时同样回退到
+            默认语言。
         """
-        lang_code = getattr(g, "lang_code", None)
-        if lang_code:
-            return lang_code
-        stored = session.get(_SESSION_KEY)
-        if stored in LANGUAGES:
-            return stored
-        best = request.accept_languages.best_match(list(LANGUAGES))
-        return best or DEFAULT_LANGUAGE
+        try:
+            lang_code = getattr(g, "lang_code", None)
+            if lang_code:
+                return lang_code
+            stored = session.get(_SESSION_KEY)
+            if stored in LANGUAGES:
+                return stored
+            best = request.accept_languages.best_match(list(LANGUAGES))
+            return best or DEFAULT_LANGUAGE
+        except RuntimeError:  # 无请求上下文
+            return str(app.config.get("BABEL_DEFAULT_LOCALE", DEFAULT_LANGUAGE))
 
     babel.init_app(app, locale_selector=_select_locale)
 
