@@ -277,6 +277,7 @@ pet_web1/
 ├── messages.pot                # 抽取基准（由 pybabel extract 生成）
 ├── Dockerfile                  # 容器镜像构建文件
 ├── docker-compose.yml          # 服务编排配置（含 SQLite 数据卷）
+├── update.sh                   # 一键更新脚本：拉取代码并重建、重启 Docker 服务
 ├── .gitignore / .dockerignore  # 忽略规则
 └── src/
     └── vv_pet01/
@@ -376,6 +377,27 @@ docker compose down                # 停止并移除
 
 - 容器内由 Gunicorn 监听 `0.0.0.0:8000`，日志输出到标准输出，便于采集。
 - SQLite 数据库落在 `/app/instance`，通过具名数据卷 `vv_pet01_data` 持久化，容器重建后申请记录不丢失。
+
+### 一键更新（update.sh）
+
+在部署机上执行 `./update.sh` 即可完成「拉取最新代码 → 重新构建镜像 → 滚动重启 → 健康检查 → 清理旧镜像」的全流程：
+
+```bash
+./update.sh                # 标准更新：git pull + 重建镜像 + 滚动重启
+./update.sh --skip-pull    # 跳过 git pull，仅用当前代码重建并重启
+./update.sh --no-cache     # 不使用 Docker 层缓存重建（排查构建问题时用）
+./update.sh --help         # 查看用法
+```
+
+脚本行为要点：
+
+- **安全拉取**：工作区有未提交改动时中止（避免覆盖本地修改），`git pull --ff-only` 防止意外合并；
+  可通过 `GIT_BRANCH` / `GIT_REMOTE` 环境变量指定分支与远端。
+- **失败不中断服务**：镜像构建失败时旧容器继续运行；构建成功才执行 `up -d` 滚动重建。
+- **健康检查**：重启后轮询容器 HEALTHCHECK 状态（默认最长 90s，可用 `HEALTH_TIMEOUT` 调整），
+  超时则输出容器日志并退出非零，便于接入 CI/CD 或 crontab。
+- **数据安全**：数据库与上传文件在数据卷 `vv_pet01_data` 中，更新全程不受影响。
+- **磁盘清理**：每次更新后自动清理悬空旧镜像。
 
 ## 配置项
 
